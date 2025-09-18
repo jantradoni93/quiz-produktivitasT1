@@ -2,25 +2,113 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Uji Kompetensi - Peningkatan Produktivitas</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .scrollable-content { max-height: 20rem; overflow-y: auto; }
-    .container { width: 100%; max-width: 800px; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .container {
+      max-width: 90vw;
+      width: 100%;
+      height: 90vh;
+      background-color: white;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    .scrollable-content {
+      max-height: calc(90vh - 200px);
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    .timer-warning {
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    .option-btn {
+      transition: all 0.2s ease;
+    }
+    .option-btn:hover {
+      transform: translateY(-2px);
+    }
+    .progress-bar {
+      height: 4px;
+      background-color: #e2e8f0;
+      border-radius: 2px;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background-color: #4c51bf;
+      transition: width 0.3s ease;
+    }
+    @media (min-width: 768px) {
+      .container {
+        max-width: 600px;
+        height: 80vh;
+      }
+      .scrollable-content {
+        max-height: calc(80vh - 200px);
+      }
+    }
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-8">
-  <div id="app" class="container bg-white shadow-xl rounded-2xl p-6 sm:p-8 transition-all duration-300">
-    <!-- Konten akan dirender oleh JavaScript -->
+<body class="flex items-center justify-center min-h-screen p-4 bg-gray-100">
+  <div class="container">
+    <!-- Header -->
+    <div class="p-4 bg-white border-b border-gray-200">
+      <div class="flex justify-between items-center mb-2">
+        <h1 class="text-lg font-bold text-gray-800">Uji Kompetensi</h1>
+        <div id="timer" class="text-red-600 font-bold text-lg timer-warning">60:00</div>
+      </div>
+      <div class="progress-bar">
+        <div id="progress" class="progress-fill" style="width: 0%"></div>
+      </div>
+      <div class="flex justify-between text-xs text-gray-500">
+        <span>Soal <span id="current-num">1</span> dari <span id="total-num">60</span></span>
+        <span id="status">Persiapan</span>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div id="app" class="flex-1 p-4 overflow-hidden">
+      <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center space-y-6">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Peningkatan Produktivitas</h2>
+        <p class="text-gray-600 leading-relaxed">Selamat datang di uji kompetensi. Uji ini terdiri dari 50 soal pilihan ganda dan 10 soal esai. Total 60 soal.</p>
+        <p class="text-sm text-gray-500">Waktu pengerjaan: 60 menit</p>
+        <button onclick="startTest()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          Mulai Uji
+        </button>
+      </div>
+    </div>
   </div>
 
   <script>
     const app = document.getElementById('app');
+    const timerDisplay = document.getElementById('timer');
+    const progressFill = document.getElementById('progress');
+    const currentNumDisplay = document.getElementById('current-num');
+    const totalNumDisplay = document.getElementById('total-num');
+    const statusDisplay = document.getElementById('status');
 
-    // Data soal dari file Anda
+    // Data soal
     const questions = [
       { type: "multiple-choice", question: "Apa manfaat dari 'membuat rencana harian'?", options: ["Membuang-buang waktu.", "Membantu mengelola waktu dan prioritas.", "Menambahkan stres.", "Membuat Anda merasa malas."], answer: "Membantu mengelola waktu dan prioritas." },
       { type: "multiple-choice", question: "Apa yang harus Anda lakukan untuk menghindari 'burnout'?", options: ["Bekerja lebih keras.", "Mengambil istirahat teratur dan mengelola stres.", "Mengabaikan tanda-tanda kelelahan.", "Berhenti bekerja."], answer: "Mengambil istirahat teratur dan mengelola stres." },
@@ -29,38 +117,45 @@
       { type: "multiple-choice", question: "Apa manfaat dari 'memprioritaskan' tugas?", options: ["Memastikan tugas yang paling penting selesai tepat waktu.", "Membuat pekerjaan lebih rumit.", "Menghindari pekerjaan penting.", "Membuat Anda terlihat sibuk."], answer: "Memastikan tugas yang paling penting selesai tepat waktu." },
       { type: "multiple-choice", question: "Apa yang dimaksud dengan 'multitasking'?", options: ["Melakukan satu tugas dalam satu waktu.", "Melakukan banyak tugas sekaligus.", "Beristirahat dari pekerjaan.", "Mendelegasikan tugas."], answer: "Melakukan banyak tugas sekaligus." },
       { type: "multiple-choice", question: "Bagaimana 'memecah tugas besar' dapat membantu mengatasi 'prokrastinasi'?", options: ["Membuat tugas terlihat lebih sulit.", "Mengurangi rasa takut dan kewalahan dengan membuat pekerjaan lebih mudah dikelola.", "Memperpanjang waktu yang dibutuhkan untuk menyelesaikan tugas.", "Tidak ada pengaruhnya."], answer: "Mengurangi rasa takut dan kewalahan dengan membuat pekerjaan lebih mudah dikelola." },
-      { type: "multiple-choice", question: "Mengapa 'lingkungan kerja yang teratur' penting untuk fokus?", options: ["Agar terlihat rapi.", "Mengurangi gangguan visual dan mental, serta mempermudah pencarian barang.", "Tidak ada hubungannya.", "Hanya penting untuk estetika."], answer: "Mengurangi gangguan visual dan mental, serta mempermudah pencarian barang." },
-      { type: "multiple-choice", question: "Apa peran 'istirahat singkat' selama hari kerja?", options: ["Menunda pekerjaan.", "Membantu menjaga konsentrasi, mengurangi kelelahan, dan mencegah mental block.", "Menurunkan tingkat energi.", "Tidak perlu jika Anda ingin produktif."], answer: "Membantu menjaga konsentrasi, mengurangi kelelahan, dan mencegah mental block." },
+      { type: "multiple-choice", question: "Mengapa 'lingkungan kerja yang teratur' penting untuk fokus?", options: ["Agar terlihat rapi.", "Membantu menjaga konsentrasi, mengurangi kelelahan, dan mencegah mental block.", "Tidak perlu membersihkan lagi.", "Hanya penting untuk atasan."], answer: "Membantu menjaga konsentrasi, mengurangi kelelahan, dan mencegah mental block." },
       { type: "multiple-choice", question: "Prinsip Pareto (aturan 80/20) menyatakan bahwa:", options: ["80% dari pekerjaan membutuhkan 20% dari waktu.", "20% dari pekerjaan menghasilkan 80% dari hasil.", "80% dari hasil datang dari 80% dari usaha.", "20% dari hasil membutuhkan 20% dari usaha."], answer: "20% dari pekerjaan menghasilkan 80% dari hasil." },
-      { type: "multiple-choice", question: "Mana dari berikut ini yang merupakan contoh dari 'tugas tidak penting dan tidak mendesak'?", options: ["Menjawab email spam.", "Membalas email yang tidak mendesak.", "Menghadiri rapat yang tidak perlu.", "Membaca artikel motivasi."], answer: "Menjawab email spam." },
-      { type: "multiple-choice", question: "Mengapa 'menghilangkan notifikasi' pada perangkat Anda dapat meningkatkan produktivitas?", options: ["Agar Anda tidak tahu apa yang terjadi di media sosial.", "Karena notifikasi adalah hal yang tidak penting.", "Untuk mengurangi interupsi dan menjaga konsentrasi pada tugas yang sedang dikerjakan.", "Agar Anda bisa bekerja lebih lama."], answer: "Untuk mengurangi interupsi dan menjaga konsentrasi pada tugas yang sedang dikerjakan." },
-      { type: "multiple-choice", question: "Pilihan terbaik untuk mengurangi gangguan digital saat bekerja adalah...", options: ["Membiarkan semua notifikasi tetap menyala.", "Membuka semua aplikasi media sosial.", "Mematikan notifikasi dan menutup tab yang tidak relevan.", "Menanggapi setiap pesan yang masuk segera."], answer: "Mematikan notifikasi dan menutup tab yang tidak relevan." },
-      { type: "multiple-choice", question: "Apa tujuan dari 'mengidentifikasi faktor-faktor yang mengurangi fokus'?", options: ["Agar Anda dapat bekerja lebih lama.", "Agar Anda dapat bekerja lebih cepat.", "Agar Anda dapat menghilangkan gangguan dan meningkatkan efisiensi.", "Agar Anda dapat bekerja dengan lebih banyak gangguan."], answer: "Agar Anda dapat menghilangkan gangguan dan meningkatkan efisiensi." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'metode GTD (Getting Things Done)'?", options: ["Metode manajemen proyek yang berfokus pada visualisasi tugas.", "Sistem untuk mengorganisir tugas dan komitmen dengan memecahnya menjadi langkah-langkah yang dapat ditindaklanjuti.", "Teknik manajemen waktu yang menggunakan timer.", "Metode untuk mengelola anggaran pribadi."], answer: "Sistem untuk mengorganisir tugas dan komitmen dengan memecahnya menjadi langkah-langkah yang dapat ditindaklanjuti." },
-      { type: "multiple-choice", question: "Alat apa yang paling efektif untuk melacak kemajuan tugas dan proyek secara visual?", options: ["Buku catatan.", "Papan kanban (seperti Trello).", "Kalkulator.", "Aplikasi pemutar musik."], answer: "Papan kanban (seperti Trello)." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'prokrastinasi'?", options: ["Melakukan tugas tepat waktu.", "Menunda-nunda pekerjaan.", "Mengatur jadwal.", "Bekerja lebih awal."], answer: "Menunda-nunda pekerjaan." },
-      { type: "multiple-choice", question: "Apa yang dapat Anda lakukan untuk mengatasi 'penundaan'?", options: ["Membuat pekerjaan terlihat lebih menakutkan.", "Menunda pekerjaan lebih lama.", "Memecah tugas menjadi bagian yang lebih kecil.", "Membuat pekerjaan lebih sulit."], answer: "Memecah tugas menjadi bagian yang lebih kecil." },
-      { type: "multiple-choice", question: "Bagaimana 'membatasi waktu' untuk tugas dapat meningkatkan produktivitas?", options: ["Membuat tugas tidak mungkin selesai.", "Meningkatkan fokus dan efisiensi.", "Membuat Anda merasa terburu-buru.", "Tidak ada efek."], answer: "Meningkatkan fokus dan efisiensi." },
+      { type: "multiple-choice", question: "Mana dari berikut ini yang merupakan contoh dari 'tugas tidak penting dan tidak mendesak'?", options: ["Menjawab email spam.", "Mengerjakan proyek penting.", "Rapat tim mingguan.", "Latihan keterampilan kerja."], answer: "Menjawab email spam." },
+      { type: "multiple-choice", question: "Apa yang harus Anda lakukan untuk 'mengelola stres'?", options: ["Bekerja lebih keras.", "Berlatih relaksasi dan berolahraga.", "Mengabaikan stres.", "Menyerah."], answer: "Berlatih relaksasi dan berolahraga." },
+      { type: "multiple-choice", question: "Bagaimana 'membuat kebiasaan baik' dapat meningkatkan produktivitas?", options: ["Tidak ada hubungannya.", "Membuat pekerjaan lebih sulit.", "Mengurangi kebutuhan untuk berpikir dan membuat keputusan.", "Menambahkan lebih banyak pekerjaan."], answer: "Mengurangi kebutuhan untuk berpikir dan membuat keputusan." },
+      { type: "multiple-choice", question: "Alat bantu mana yang paling efektif untuk melacak tugas harian?", options: ["Buku catatan.", "Papan kanban (seperti Trello).", "Kalkulator.", "Aplikasi pemutar musik."], answer: "Papan kanban (seperti Trello)." },
+      { type: "multiple-choice", question: "Bagaimana 'menciptakan lingkungan kerja yang ergonomis' dapat mendukung produktivitas?", options: ["Tidak memiliki dampak.", "Meningkatkan risiko cedera dan ketidaknyamanan.", "Mencegah kelelahan fisik dan meningkatkan kenyamanan.", "Membuat pekerjaan lebih lambat."], answer: "Mencegah kelelahan fisik dan meningkatkan kenyamanan." },
+      { type: "multiple-choice", question: "Apa manfaat dari 'time-blocking'?", options: ["Membuat tugas tidak mungkin selesai.", "Meningkatkan fokus dan efisiensi.", "Membuat Anda merasa terburu-buru.", "Tidak ada efek."], answer: "Meningkatkan fokus dan efisiensi." },
       { type: "multiple-choice", question: "Pilihan mana yang merupakan 'tugas penting' menurut Matriks Eisenhower?", options: ["Membuat perencanaan strategis untuk tahun depan.", "Menonton TV.", "Membalas email yang tidak mendesak.", "Menghadiri rapat yang tidak perlu."], answer: "Membuat perencanaan strategis untuk tahun depan." },
       { type: "multiple-choice", question: "Apa yang dimaksud dengan 'tujuan jangka panjang'?", options: ["Tujuan yang dicapai dalam satu hari.", "Tujuan yang dicapai dalam beberapa bulan atau tahun.", "Tujuan yang tidak pasti.", "Tujuan yang hanya bersifat sementara."], answer: "Tujuan yang dicapai dalam beberapa bulan atau tahun." },
       { type: "multiple-choice", question: "Apa manfaat dari 'menetapkan batas waktu'?", options: ["Membuat Anda stres.", "Mendorong disiplin dan menyelesaikan tugas tepat waktu.", "Menghambat kreativitas.", "Tidak berguna."], answer: "Mendorong disiplin dan menyelesaikan tugas tepat waktu." },
       { type: "multiple-choice", question: "Apa yang dimaksud dengan 'rencana aksi'?", options: ["Daftar tugas acak.", "Urutan langkah-langkah untuk menyelesaikan suatu tugas.", "Catatan harian.", "Tugas-tugas yang paling sulit."], answer: "Urutan langkah-langkah untuk menyelesaikan suatu tugas." },
       { type: "multiple-choice", question: "Apa manfaat dari 'visualisasi' tujuan?", options: ["Membuat tujuan tidak realistis.", "Meningkatkan fokus dan motivasi.", "Menyebabkan kekecewaan.", "Membuat tujuan menjadi lebih sulit dicapai."], answer: "Meningkatkan fokus dan motivasi." },
-      { type: "multiple-choice", question: "Apa yang dapat Anda lakukan untuk 'mengelola interupsi' di tempat kerja?", options: ["Mengabaikan semua orang.", "Meminta orang lain untuk mengganggu Anda lebih sering.", "Menetapkan waktu tertentu untuk menjawab pertanyaan.", "Tidak ada yang bisa Anda lakukan."], answer: "Menetapkan waktu tertentu untuk menjawab pertanyaan." },
-      { type: "multiple-choice", question: "Apa yang harus Anda lakukan jika 'tujuan' tidak tercapai?", options: ["Menyerah.", "Meninjau kembali strategi dan menyesuaikan.", "Menyalahkan orang lain.", "Tidak melakukan apa pun."], answer: "Meninjau kembali strategi dan menyesuaikan." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'prioritas'?", options: ["Satu-satunya tugas yang Anda kerjakan.", "Tugas yang paling penting dan mendesak.", "Tugas yang paling mudah diselesaikan.", "Tugas yang tidak penting."], answer: "Tugas yang paling penting dan mendesak." },
-      { type: "multiple-choice", question: "Bagaimana 'membuat rencana harian' dapat membantu Anda menjadi lebih produktif?", options: ["Tidak ada efeknya.", "Membuang-buang waktu.", "Memberikan peta jalan yang jelas untuk hari itu.", "Menambahkan stres."], answer: "Memberikan peta jalan yang jelas untuk hari itu." },
+      { type: "multiple-choice", question: "Apa yang dapat Anda lakukan untuk 'mengelola interupsi' di tempat kerja?", options: ["Mengabaikan semua orang.", "Meminta orang lain untuk mengganggu Anda lebih sering.", "Gunakan 'do not disturb' atau jam fokus.", "Biarkan semua notifikasi menyala."], answer: "Gunakan 'do not disturb' atau jam fokus." },
+      { type: "multiple-choice", question: "Apa manfaat dari 'mencari umpan balik' dari rekan kerja?", options: ["Membuat pekerjaan lebih sulit.", "Membantu Anda mengidentifikasi area yang perlu ditingkatkan.", "Menyebabkan konflik.", "Membuat Anda terlihat tidak kompeten."], answer: "Membantu Anda mengidentifikasi area yang perlu ditingkatkan." },
+      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'delegasi'?", options: ["Melakukan semua pekerjaan sendiri.", "Menugaskan tugas kepada orang lain.", "Menghindari pekerjaan.", "Mengerjakan tugas yang tidak penting."], answer: "Menugaskan tugas kepada orang lain." },
+      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'prokrastinasi'?", options: ["Melakukan tugas tepat waktu.", "Menunda-nunda pekerjaan.", "Mengatur jadwal.", "Bekerja lebih awal."], answer: "Menunda-nunda pekerjaan." },
+      { type: "multiple-choice", question: "Apa manfaat dari 'komunikasi yang efektif'?", options: ["Tidak ada hubungannya.", "Mengurangi kesalahpahaman dan meningkatkan kolaborasi.", "Menyebabkan konflik.", "Membuat pekerjaan lebih lambat."], answer: "Mengurangi kesalahpahaman dan meningkatkan kolaborasi." },
+      { type: "multiple-choice", question: "Bagaimana 'memiliki jadwal' dapat meningkatkan produktivitas?", options: ["Membuat pekerjaan lebih sulit.", "Menyebabkan kebingungan.", "Memberikan struktur dan membantu Anda tetap pada jalur.", "Membuat Anda terlalu kaku."], answer: "Memberikan struktur dan membantu Anda tetap pada jalur." },
+      { type: "multiple-choice", question: "Mengapa penting untuk menghindari 'gangguan' saat bekerja?", options: ["Membuat pekerjaan lebih menantang.", "Mengurangi fokus dan efisiensi.", "Membuat pekerjaan lebih cepat.", "Tidak ada efek."], answer: "Mengurangi fokus dan efisiensi." },
+      { type: "multiple-choice", question: "Apa yang harus Anda lakukan untuk 'memprioritaskan' pekerjaan dengan efektif?", options: ["Kerjakan semua tugas sekaligus.", "Fokus pada tugas yang paling sulit.", "Gunakan metode seperti Matriks Eisenhower.", "Lakukan tugas yang paling Anda sukai."], answer: "Gunakan metode seperti Matriks Eisenhower." },
+      { type: "multiple-choice", question: "Apa manfaat dari 'mempersiapkan diri' untuk hari berikutnya di malam hari?", options: ["Menambah stres.", "Tidak ada manfaat.", "Memastikan Anda siap dan terorganisir di pagi hari.", "Mengganggu istirahat malam."], answer: "Memastikan Anda siap dan terorganisir di pagi hari." },
+      { type: "multiple-choice", question: "Apa yang harus Anda lakukan untuk 'mengukur' produktivitas Anda?", options: ["Abai terhadap hasil.", "Gunakan indikator seperti pencapaian target dan efisiensi waktu.", "Tidak perlu evaluasi.", "Hanya minta pendapat atasan."], answer: "Gunakan indikator seperti pencapaian target dan efisiensi waktu." },
+      { type: "multiple-choice", question: "Manakah dari berikut ini yang merupakan contoh dari 'tugas penting dan mendesak'?", options: ["Mengerjakan proyek yang penting dengan tenggat waktu dekat.", "Menulis daftar belanja.", "Merencanakan liburan.", "Menonton film."], answer: "Mengerjakan proyek yang penting dengan tenggat waktu dekat." },
+      { type: "multiple-choice", question: "Bagaimana 'lingkungan kerja' yang nyaman dapat meningkatkan produktivitas?", options: ["Tidak ada hubungannya.", "Mengurangi kenyamanan.", "Meningkatkan fokus dan mengurangi stres.", "Membuat Anda ingin tidur."], answer: "Meningkatkan fokus dan mengurangi stres." },
+      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'tugas rutin'?", options: ["Tugas yang hanya dilakukan sekali.", "Tugas yang dihindari.", "Tugas yang dilakukan secara berulang-ulang.", "Tugas yang paling sulit."], answer: "Tugas yang dilakukan secara berulang-ulang." },
+      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'SMART goal'?", options: ["Tujuan yang Spesifik, Terukur, Dapat Dicapai, Relevan, Berbatas Waktu.", "Tujuan yang Sederhana, Menantang, Ambisius, Realistis, Terbatas."], answer: "Tujuan yang Spesifik, Terukur, Dapat Dicapai, Relevan, Berbatas Waktu." },
+      { type: "multiple-choice", question: "Faktor apa yang paling signifikan dalam menghambat produktivitas kerja?", options: ["Tidur yang cukup.", "Istirahat teratur.", "Gangguan yang tidak terkendali (misalnya, notifikasi media sosial).", "Perencanaan yang matang."], answer: "Gangguan yang tidak terkendali (misalnya, notifikasi media sosial)." },
+      { type: "multiple-choice", question: "Apa manfaat dari menerapkan 'teknik Pomodoro'?", options: ["Meningkatkan fokus dan mengurangi kelelahan mental.", "Membuat pekerjaan lebih lama.", "Mendorong multitasking.", "Tidak ada manfaat."], answer: "Meningkatkan fokus dan mengurangi kelelahan mental." },
+      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'efektivitas'?", options: ["Melakukan sesuatu dengan cara yang paling efektif.", "Menghasilkan output maksimal.", "Bekerja lebih keras dan lebih lama.", "Melakukan hal yang benar."], answer: "Melakukan hal yang benar." },
+      { type: "multiple-choice", question: "Apa yang dapat Anda lakukan untuk meningkatkan 'konsentrasi'?", options: ["Melakukan banyak tugas sekaligus.", "Menghilangkan gangguan.", "Menjawab setiap email segera.", "Mengabaikan tugas."], answer: "Menghilangkan gangguan." },
+      { type: "multiple-choice", question: "Apa manfaat dari 'menetapkan prioritas'?", options: ["Tidak ada manfaat yang signifikan.", "Mengurangi stres dan membantu mengelola prioritas.", "Menambah kebingungan."], answer: "Mengurangi stres dan membantu mengelola prioritas." },
+      { type: "multiple-choice", question: "Manakah dari berikut ini yang merupakan contoh dari 'tugas mendesak tetapi tidak penting' menurut Matriks Eisenhower?", options: ["Mengerjakan proyek penting.", "Membantu rekan kerja yang membutuhkan bantuan mendadak.", "Menulis laporan tahunan.", "Merencanakan strategi jangka panjang."], answer: "Membantu rekan kerja yang membutuhkan bantuan mendadak." },
       { type: "multiple-choice", question: "Apa tujuan utama dari 'time-blocking'?", options: ["Menghabiskan waktu lebih banyak.", "Mengalokasikan waktu untuk tugas tertentu agar lebih fokus.", "Membuat jadwal lebih padat.", "Menghindari perencanaan."], answer: "Mengalokasikan waktu untuk tugas tertentu agar lebih fokus." },
       { type: "multiple-choice", question: "Apa yang dimaksud dengan 'tugas yang penting dan tidak mendesak'?", options: ["Tugas yang harus dikerjakan segera.", "Tugas yang dapat ditunda.", "Tugas yang perlu dijadwalkan.", "Tugas yang tidak relevan."], answer: "Tugas yang perlu dijadwalkan." },
       { type: "multiple-choice", question: "Bagaimana 'tidur yang berkualitas' dapat meningkatkan produktivitas?", options: ["Tidak ada hubungannya.", "Menyebabkan kelelahan.", "Meningkatkan memori dan fungsi kognitif.", "Hanya relevan untuk kesehatan fisik."], answer: "Meningkatkan memori dan fungsi kognitif." },
       { type: "multiple-choice", question: "Apa yang harus Anda lakukan jika 'merasa kelelahan'?", options: ["Bekerja lebih keras.", "Mengambil istirahat dan beristirahat.", "Mengabaikan perasaan.", "Menyerah."], answer: "Mengambil istirahat dan beristirahat." },
       { type: "multiple-choice", question: "Apa yang harus Anda lakukan jika Anda menghadapi 'mental block'?", options: ["Meninggalkan pekerjaan sepenuhnya.", "Memaksa diri untuk terus bekerja.", "Beristirahat sejenak, beralih ke tugas yang berbeda, atau melakukan aktivitas fisik ringan.", "Minta orang lain untuk mengerjakan tugas Anda."], answer: "Beristirahat sejenak, beralih ke tugas yang berbeda, atau melakukan aktivitas fisik ringan." },
       { type: "multiple-choice", question: "Apa yang harus Anda lakukan jika 'merasa tertekan' saat bekerja?", options: ["Menyerah.", "Beristirahat sejenak dan melakukan sesuatu yang menyenangkan.", "Melanjutkan bekerja meskipun Anda tidak bisa fokus.", "Menyalahkan diri sendiri."], answer: "Beristirahat sejenak dan melakukan sesuatu yang menyenangkan." },
-      { type: "multiple-choice", question: "Apa yang harus Anda lakukan untuk 'mencapai tujuan'?", options: ["Tidak memiliki rencana.", "Menetapkan rencana dan mengambil tindakan.", "Menunggu kesempatan datang.", "Menghindari tanggung jawab."], answer: "Menetapkan rencana dan mengambil tindakan." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'efisiensi'?", options: ["Melakukan hal yang benar.", "Melakukan sesuatu dengan cara yang paling hemat sumber daya.", "Bekerja lebih cepat tanpa peduli hasil.", "Menghindari pekerjaan."], answer: "Melakukan sesuatu dengan cara yang paling hemat sumber daya." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'efektivitas'?", options: ["Melakukan sesuatu dengan cara yang paling efektif.", "Menghasilkan output maksimal.", "Bekerja lebih keras dan lebih lama.", "Melakukan hal yang benar."], answer: "Melakukan hal yang benar." },
-      { type: "multiple-choice", question: "Apa yang dapat Anda lakukan untuk meningkatkan 'konsentrasi'?", options: ["Melakukan banyak tugas sekaligus.", "Menghilangkan gangguan.", "Menjawab setiap email segera.", "Mengabaikan tugas."], answer: "Menghilangkan gangguan." },
-      { type: "multiple-choice", question: "Apa manfaat dari 'mencari umpan balik' dari rekan kerja?", options: ["Membuat pekerjaan lebih sulit.", "Membantu Anda mengidentifikasi area yang perlu ditingkatkan.", "Menyebabkan konflik.", "Membuat Anda terlihat tidak kompeten."], answer: "Membantu Anda mengidentifikasi area yang perlu ditingkatkan." },
       { type: "multiple-choice", question: "Apa tujuan dari 'delegasi' yang efektif?", options: ["Menyebabkan konflik antar anggota tim.", "Meningkatkan beban kerja seorang manajer.", "Memungkinkan manajer untuk fokus pada tugas prioritas tinggi sementara tugas lain diselesaikan oleh anggota tim.", "Mengurangi kualitas hasil kerja."], answer: "Memungkinkan manajer untuk fokus pada tugas prioritas tinggi sementara tugas lain diselesaikan oleh anggota tim." },
       { type: "multiple-choice", question: "Alat bantu digital apa yang paling cocok untuk manajemen proyek visual?", options: ["Microsoft Word.", "Trello atau Asana.", "Google Docs.", "Microsoft Excel."], answer: "Trello atau Asana." },
       { type: "multiple-choice", question: "Apa yang dimaksud dengan 'tujuan yang relevan'?", options: ["Tujuan yang tidak penting.", "Tujuan yang berhubungan dengan kehidupan atau karir Anda.", "Tujuan yang mudah dicapai.", "Tujuan yang sulit."], answer: "Tujuan yang berhubungan dengan kehidupan atau karir Anda." },
@@ -80,26 +175,72 @@
     let multipleChoiceScore = 0;
     let userAnswers = [];
     let shuffledQuestions = [];
+    let timer;
+    let timeLeft = 60 * 60; // 60 menit dalam detik
+    let isTestStarted = false;
 
     function showWelcomeScreen() {
       app.innerHTML = `
-        <div class="text-center space-y-6">
-          <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-gray-800">Uji Kompetensi</h1>
-          <h2 class="text-xl sm:text-2xl font-semibold mb-6 text-gray-700">Peningkatan Produktivitas</h2>
-          <p class="text-gray-600 mb-8">Selamat datang di uji kompetensi. Uji ini terdiri dari 50 soal pilihan ganda dan 10 soal esai. Total 60 soal.</p>
-          <button onclick="startTest()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300">Mulai Uji</button>
+        <div class="flex flex-col items-center justify-center h-full text-center space-y-6">
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Peningkatan Produktivitas</h2>
+          <p class="text-gray-600 leading-relaxed">Selamat datang di uji kompetensi. Uji ini terdiri dari 50 soal pilihan ganda dan 10 soal esai. Total 60 soal.</p>
+          <p class="text-sm text-gray-500">Waktu pengerjaan: 60 menit</p>
+          <button onclick="startTest()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Mulai Uji
+          </button>
         </div>`;
+      statusDisplay.textContent = "Persiapan";
     }
 
     function startTest() {
-      const multipleChoiceQuestions = questions.filter(q => q.type === 'multiple-choice');
+      const mcqQuestions = questions.filter(q => q.type === 'multiple-choice');
       const essayQuestions = questions.filter(q => q.type === 'essay');
-      const shuffledMultipleChoice = [...multipleChoiceQuestions].sort(() => Math.random() - 0.5);
-      shuffledQuestions = [...shuffledMultipleChoice, ...essayQuestions];
+      
+      // Acak soal PG
+      for (let i = mcqQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [mcqQuestions[i], mcqQuestions[j]] = [mcqQuestions[j], mcqQuestions[i]];
+      }
+      
+      shuffledQuestions = [...mcqQuestions, ...essayQuestions];
       currentQuestionIndex = 0;
       multipleChoiceScore = 0;
-      userAnswers = [];
+      userAnswers = Array(shuffledQuestions.length).fill(null);
+      isTestStarted = true;
+      
+      // Mulai timer
+      startTimer();
+      
       renderQuestion();
+      updateProgress();
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Warna merah saat waktu kurang dari 10 menit
+        if (timeLeft <= 600) {
+          timerDisplay.classList.add('timer-warning');
+        }
+        
+        // Akhiri tes otomatis saat waktu habis
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
     function renderQuestion() {
@@ -108,66 +249,144 @@
         return;
       }
 
-      const questionData = shuffledQuestions[currentQuestionIndex];
-      let contentHTML = '';
+      const q = shuffledQuestions[currentQuestionIndex];
+      let optionsHtml = '';
+      let answerValue = '';
 
-      if (questionData.type === 'multiple-choice') {
-        contentHTML = `<div class="space-y-3">${questionData.options.map((option, index) => `
-          <div class="flex items-start">
-            <input type="radio" id="option${index}" name="answer" value="${option}" class="form-radio h-5 w-5 text-blue-600 mt-1">
-            <label for="option${index}" class="ml-3 text-lg text-gray-700 w-full">${option}</label>
-          </div>`).join('')}</div>`;
+      if (userAnswers[currentQuestionIndex]) {
+        answerValue = userAnswers[currentQuestionIndex].answer;
+      }
+
+      if (q.type === 'multiple-choice') {
+        optionsHtml = q.options.map(opt => `
+          <div class="mb-3">
+            <label class="flex items-start p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200 ${answerValue === opt ? 'bg-blue-100 border-blue-500' : ''}">
+              <input type="radio" name="option" value="${opt}" ${answerValue === opt ? 'checked' : ''} onchange="handleOptionChange(this)" class="mt-1 mr-3">
+              <span class="text-gray-700">${opt}</span>
+            </label>
+          </div>
+        `).join('');
       } else {
-        contentHTML = `<div class="w-full">
-          <textarea id="essayAnswer" rows="6" class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tulis jawaban Anda di sini..."></textarea>
-        </div>`;
+        optionsHtml = `
+          <div class="mb-4">
+            <textarea id="essay-answer" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" placeholder="Tulis jawaban Anda di sini...">${answerValue || ''}</textarea>
+          </div>`;
       }
 
       app.innerHTML = `
-        <div class="w-full text-left">
-          <div class="flex justify-between items-center mb-6 text-sm text-gray-500">
-            <span>Soal ${currentQuestionIndex + 1} dari ${shuffledQuestions.length}</span>
+        <div class="h-full flex flex-col">
+          <div class="mb-4">
+            <h3 class="text-lg sm:text-xl font-semibold mb-4 text-gray-800 leading-relaxed">${q.question}</h3>
           </div>
-          <h3 class="text-xl font-semibold mb-6 text-gray-800 leading-relaxed">${questionData.question}</h3>
-          ${contentHTML}
-          <button onclick="nextQuestion()" class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow transition duration-200">Selanjutnya</button>
+          
+          <div class="scrollable-content flex-1 pb-4">
+            ${optionsHtml}
+          </div>
+          
+          <div class="flex gap-3 pt-4 border-t border-gray-200">
+            <button onclick="goToPreviousQuestion()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentQuestionIndex === 0 ? 'disabled' : ''}>
+              Sebelumnya
+            </button>
+            
+            <button onclick="nextQuestion()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+              ${currentQuestionIndex === shuffledQuestions.length - 1 ? 'Selesai' : 'Selanjutnya'}
+            </button>
+          </div>
         </div>`;
+      
+      currentNumDisplay.textContent = currentQuestionIndex + 1;
+      totalNumDisplay.textContent = shuffledQuestions.length;
+      statusDisplay.textContent = `Mengerjakan Soal`;
+    }
+
+    function handleOptionChange(radio) {
+      const selectedOption = radio.value;
+      const currentQuestion = shuffledQuestions[currentQuestionIndex];
+      
+      // Simpan jawaban
+      userAnswers[currentQuestionIndex] = {
+        type: 'multiple-choice',
+        question: currentQuestion.question,
+        answer: selectedOption
+      };
+      
+      // Update skor jika jawaban benar
+      if (selectedOption === currentQuestion.answer) {
+        multipleChoiceScore++;
+      } else if (userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].answer === currentQuestion.answer) {
+        // Kurangi skor jika sebelumnya benar tapi sekarang diganti ke salah
+        multipleChoiceScore--;
+      }
+    }
+
+    function goToPreviousQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuestion();
+        updateProgress();
+      }
     }
 
     function nextQuestion() {
-      const questionData = shuffledQuestions[currentQuestionIndex];
-      let selectedValue = null;
-
-      if (questionData.type === 'multiple-choice') {
-        const selectedOption = document.querySelector('input[name="answer"]:checked');
-        if (!selectedOption) {
-          alertCustom('Silakan pilih salah satu jawaban!');
+      const q = shuffledQuestions[currentQuestionIndex];
+      let userAnswer = '';
+      
+      if (q.type === 'multiple-choice') {
+        const selected = document.querySelector('input[name="option"]:checked');
+        if (!selected) {
+          showAlert('Silakan pilih jawaban!');
           return;
         }
-        selectedValue = selectedOption.value;
-        if (selectedValue === questionData.answer) {
+        userAnswer = selected.value;
+      } else {
+        const textarea = document.getElementById('essay-answer');
+        userAnswer = textarea.value.trim();
+        if (!userAnswer) {
+          showAlert('Jawaban esai tidak boleh kosong!');
+          return;
+        }
+      }
+      
+      // Simpan jawaban
+      userAnswers[currentQuestionIndex] = {
+        type: q.type,
+        question: q.question,
+        answer: userAnswer
+      };
+      
+      // Update skor untuk pilihan ganda
+      if (q.type === 'multiple-choice') {
+        if (userAnswer === q.answer) {
           multipleChoiceScore++;
         }
-      } else {
-        const essayAnswer = document.getElementById('essayAnswer');
-        if (!essayAnswer.value.trim()) {
-          alertCustom('Jawaban esai tidak boleh kosong!');
-          return;
-        }
-        selectedValue = essayAnswer.value.trim();
       }
-
-      userAnswers.push({ ...questionData, userAnswer: selectedValue });
+      
+      // Lanjut ke soal berikutnya
       currentQuestionIndex++;
-      renderQuestion();
+      
+      if (currentQuestionIndex < shuffledQuestions.length) {
+        renderQuestion();
+      } else {
+        showResults();
+      }
+      
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const progress = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+      progressFill.style.width = `${progress}%`;
     }
 
     function showResults() {
-      const totalMultipleChoice = questions.filter(q => q.type === 'multiple-choice').length;
+      clearInterval(timer);
+      
+      const totalMultipleChoice = shuffledQuestions.filter(q => q.type === 'multiple-choice').length;
       const correctAnswers = multipleChoiceScore;
       const wrongAnswers = totalMultipleChoice - correctAnswers;
-      const essayAnswers = userAnswers.filter(a => a.type === 'essay');
-
+      const unanswered = shuffledQuestions.filter((q, i) => !userAnswers[i]).length;
+      const essayAnswers = userAnswers.filter(a => a && a.type === 'essay');
+      
       let essaySummaryHtml = '';
       if (essayAnswers.length > 0) {
         essaySummaryHtml = `<div class="w-full mt-6">
@@ -177,42 +396,69 @@
               <div class="p-4 rounded-lg bg-gray-100 border border-gray-300 text-left">
                 <p class="font-semibold text-gray-800 mb-2">Soal Esai ${index + 1}: ${item.question}</p>
                 <p class="text-sm font-medium">Jawaban Anda:</p>
-                <p class="text-sm text-gray-700">${item.userAnswer}</p>
+                <p class="text-sm text-gray-700">${item.answer}</p>
               </div>
             `).join('')}
           </div>
         </div>`;
       }
-
+      
       app.innerHTML = `
-        <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-blue-600">Hasil Uji Kompetensi</h1>
-        <p class="text-xl font-semibold mb-6 text-gray-700">Skor Pilihan Ganda: ${multipleChoiceScore}/${totalMultipleChoice}</p>
-        <div class="w-full text-left bg-gray-100 p-6 rounded-lg mb-6 shadow-sm">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-green-600 font-bold">Jawaban Benar:</span>
-            <span class="text-green-600 font-bold text-2xl">${correctAnswers}</span>
+        <div class="flex flex-col h-full">
+          <h1 class="text-2xl sm:text-3xl font-bold mb-2 text-blue-600 text-center">Hasil Uji Kompetensi</h1>
+          <p class="text-lg text-gray-700 text-center mb-6">Skor Pilihan Ganda: ${correctAnswers}/${totalMultipleChoice}</p>
+          
+          <div class="grid grid-cols-3 gap-3 mb-6">
+            <div class="text-center p-3 bg-green-100 rounded-lg">
+              <div class="text-2xl font-bold text-green-600">${correctAnswers}</div>
+              <div class="text-sm text-green-700">Benar</div>
+            </div>
+            <div class="text-center p-3 bg-red-100 rounded-lg">
+              <div class="text-2xl font-bold text-red-600">${wrongAnswers}</div>
+              <div class="text-sm text-red-700">Salah</div>
+            </div>
+            <div class="text-center p-3 bg-yellow-100 rounded-lg">
+              <div class="text-2xl font-bold text-yellow-600">${unanswered}</div>
+              <div class="text-sm text-yellow-700">Belum Dijawab</div>
+            </div>
           </div>
-          <div class="flex justify-between items-center">
-            <span class="text-red-600 font-bold">Jawaban Salah:</span>
-            <span class="text-red-600 font-bold text-2xl">${wrongAnswers}</span>
+          
+          ${essaySummaryHtml}
+          
+          <div class="mt-auto pt-4">
+            <button onclick="showWelcomeScreen()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+              Kembali ke Menu Utama
+            </button>
           </div>
-        </div>
-        ${essaySummaryHtml}
-        <button onclick="showWelcomeScreen()" class="mt-8 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300">Selesai</button>`;
+        </div>`;
+      
+      statusDisplay.textContent = "Selesai";
     }
 
-    function alertCustom(message) {
+    function showAlert(message) {
       const alertDiv = document.createElement('div');
-      alertDiv.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50';
+      alertDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
       alertDiv.innerHTML = `
-        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm text-center">
-          <p class="text-lg font-semibold mb-4">${message}</p>
-          <button onclick="this.parentNode.parentNode.remove()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full transition duration-300">OK</button>
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full text-center">
+          <p class="text-lg font-semibold text-gray-800 mb-4">${message}</p>
+          <button onclick="this.parentNode.parentNode.remove()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-200">
+            OK
+          </button>
         </div>`;
       document.body.appendChild(alertDiv);
     }
 
-    window.onload = showWelcomeScreen;
+    // Handle beforeunload untuk konfirmasi keluar
+    window.addEventListener('beforeunload', function(e) {
+      if (isTestStarted && timeLeft > 0) {
+        const confirmationMessage = 'Anda yakin ingin meninggalkan halaman ini? Proses ujian akan terhenti.';
+        e.returnValue = confirmationMessage;
+        return confirmationMessage;
+      }
+    });
+
+    // Inisialisasi
+    showWelcomeScreen();
   </script>
 </body>
 </html>
