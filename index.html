@@ -83,6 +83,15 @@
     .scrollable-content::-webkit-scrollbar-thumb:hover {
       background: #a8a8a8;
     }
+    .question-type {
+      display: inline-block;
+      background-color: #4c51bf;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 bg-gray-100">
@@ -106,7 +115,7 @@
     <div id="app" class="flex-1 p-4 overflow-hidden">
       <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center space-y-6">
         <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Peningkatan Produktivitas</h2>
-        <p class="text-gray-600 leading-relaxed">Selamat datang di uji kompetensi. Uji ini terdiri dari 50 soal pilihan ganda dan 10 soal esai. Total 60 soal.</p>
+        <p class="text-gray-600 leading-relaxed">Selamat datang di uji kompetensi. Uji ini terdiri dari 40 soal pilihan ganda dan 10 soal esai. Total 50 soal.</p>
         <p class="text-sm text-gray-500">Waktu pengerjaan: 60 menit</p>
         <button onclick="startTest()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
           Mulai Uji
@@ -123,67 +132,55 @@
     const totalNumDisplay = document.getElementById('total-num');
     const statusDisplay = document.getElementById('status');
 
-    // Data soal
+    // Data soal yang telah disesuaikan dengan materi
     const questions = [
-      { type: "multiple-choice", question: "Apa manfaat dari 'membuat rencana harian'?", options: ["Membuang-buang waktu.", "Membantu mengelola waktu dan prioritas.", "Menambahkan stres.", "Membuat Anda merasa malas."], answer: "Membantu mengelola waktu dan prioritas." },
-      { type: "multiple-choice", question: "Apa yang harus Anda lakukan untuk menghindari 'burnout'?", options: ["Bekerja lebih keras.", "Mengambil istirahat teratur dan mengelola stres.", "Mengabaikan tanda-tanda kelelahan.", "Berhenti bekerja."], answer: "Mengambil istirahat teratur dan mengelola stres." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'zona aliran (flow state)'?", options: ["Kondisi malas.", "Kondisi konsentrasi penuh.", "Kondisi kebingungan.", "Kondisi stres tinggi."], answer: "Kondisi konsentrasi penuh." },
-      { type: "multiple-choice", question: "Apa tujuan dari 'analisis waktu'?", options: ["Untuk membuang waktu.", "Untuk memahami bagaimana Anda menghabiskan waktu Anda.", "Untuk melupakan waktu.", "Untuk menambahkan waktu ekstra."], answer: "Untuk memahami bagaimana Anda menghabiskan waktu Anda." },
-      { type: "multiple-choice", question: "Apa manfaat dari 'memprioritaskan' tugas?", options: ["Memastikan tugas yang paling penting selesai tepat waktu.", "Membuat pekerjaan lebih rumit.", "Menghindari pekerjaan penting.", "Membuat Anda terlihat sibuk."], answer: "Memastikan tugas yang paling penting selesai tepat waktu." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'multitasking'?", options: ["Melakukan satu tugas dalam satu waktu.", "Melakukan banyak tugas sekaligus.", "Beristirahat dari pekerjaan.", "Mendelegasikan tugas."], answer: "Melakukan banyak tugas sekaligus." },
-      { type: "multiple-choice", question: "Bagaimana 'memecah tugas besar' dapat membantu mengatasi 'prokrastinasi'?", options: ["Membuat tugas terlihat lebih sulit.", "Mengurangi rasa takut dan kewalahan dengan membuat pekerjaan lebih mudah dikelola.", "Memperpanjang waktu yang dibutuhkan untuk menyelesaikan tugas.", "Tidak ada pengaruhnya."], answer: "Mengurangi rasa takut dan kewalahan dengan membuat pekerjaan lebih mudah dikelola." },
-      { type: "multiple-choice", question: "Mengapa 'lingkungan kerja yang teratur' penting untuk fokus?", options: ["Agar terlihat rapi.", "Membantu menjaga konsentrasi, mengurangi kelelahan, dan mencegah mental block.", "Tidak perlu membersihkan lagi.", "Hanya penting untuk atasan."], answer: "Membantu menjaga konsentrasi, mengurangi kelelahan, dan mencegah mental block." },
-      { type: "multiple-choice", question: "Prinsip Pareto (aturan 80/20) menyatakan bahwa:", options: ["80% dari pekerjaan membutuhkan 20% dari waktu.", "20% dari pekerjaan menghasilkan 80% dari hasil.", "80% dari hasil datang dari 80% dari usaha.", "20% dari hasil membutuhkan 20% dari usaha."], answer: "20% dari pekerjaan menghasilkan 80% dari hasil." },
-      { type: "multiple-choice", question: "Mana dari berikut ini yang merupakan contoh dari 'tugas tidak penting dan tidak mendesak'?", options: ["Menjawab email spam.", "Mengerjakan proyek penting.", "Rapat tim mingguan.", "Latihan keterampilan kerja."], answer: "Menjawab email spam." },
-      { type: "multiple-choice", question: "Apa yang harus Anda lakukan untuk 'mengelola stres'?", options: ["Bekerja lebih keras.", "Berlatih relaksasi dan berolahraga.", "Mengabaikan stres.", "Menyerah."], answer: "Berlatih relaksasi dan berolahraga." },
-      { type: "multiple-choice", question: "Bagaimana 'membuat kebiasaan baik' dapat meningkatkan produktivitas?", options: ["Tidak ada hubungannya.", "Membuat pekerjaan lebih sulit.", "Mengurangi kebutuhan untuk berpikir dan membuat keputusan.", "Menambahkan lebih banyak pekerjaan."], answer: "Mengurangi kebutuhan untuk berpikir dan membuat keputusan." },
-      { type: "multiple-choice", question: "Alat bantu mana yang paling efektif untuk melacak tugas harian?", options: ["Buku catatan.", "Papan kanban (seperti Trello).", "Kalkulator.", "Aplikasi pemutar musik."], answer: "Papan kanban (seperti Trello)." },
-      { type: "multiple-choice", question: "Bagaimana 'menciptakan lingkungan kerja yang ergonomis' dapat mendukung produktivitas?", options: ["Tidak memiliki dampak.", "Meningkatkan risiko cedera dan ketidaknyamanan.", "Mencegah kelelahan fisik dan meningkatkan kenyamanan.", "Membuat pekerjaan lebih lambat."], answer: "Mencegah kelelahan fisik dan meningkatkan kenyamanan." },
-      { type: "multiple-choice", question: "Apa manfaat dari 'time-blocking'?", options: ["Membuat tugas tidak mungkin selesai.", "Meningkatkan fokus dan efisiensi.", "Membuat Anda merasa terburu-buru.", "Tidak ada efek."], answer: "Meningkatkan fokus dan efisiensi." },
-      { type: "multiple-choice", question: "Pilihan mana yang merupakan 'tugas penting' menurut Matriks Eisenhower?", options: ["Membuat perencanaan strategis untuk tahun depan.", "Menonton TV.", "Membalas email yang tidak mendesak.", "Menghadiri rapat yang tidak perlu."], answer: "Membuat perencanaan strategis untuk tahun depan." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'tujuan jangka panjang'?", options: ["Tujuan yang dicapai dalam satu hari.", "Tujuan yang dicapai dalam beberapa bulan atau tahun.", "Tujuan yang tidak pasti.", "Tujuan yang hanya bersifat sementara."], answer: "Tujuan yang dicapai dalam beberapa bulan atau tahun." },
-      { type: "multiple-choice", question: "Apa manfaat dari 'menetapkan batas waktu'?", options: ["Membuat Anda stres.", "Mendorong disiplin dan menyelesaikan tugas tepat waktu.", "Menghambat kreativitas.", "Tidak berguna."], answer: "Mendorong disiplin dan menyelesaikan tugas tepat waktu." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'rencana aksi'?", options: ["Daftar tugas acak.", "Urutan langkah-langkah untuk menyelesaikan suatu tugas.", "Catatan harian.", "Tugas-tugas yang paling sulit."], answer: "Urutan langkah-langkah untuk menyelesaikan suatu tugas." },
-      { type: "multiple-choice", question: "Apa manfaat dari 'visualisasi' tujuan?", options: ["Membuat tujuan tidak realistis.", "Meningkatkan fokus dan motivasi.", "Menyebabkan kekecewaan.", "Membuat tujuan menjadi lebih sulit dicapai."], answer: "Meningkatkan fokus dan motivasi." },
-      { type: "multiple-choice", question: "Apa yang dapat Anda lakukan untuk 'mengelola interupsi' di tempat kerja?", options: ["Mengabaikan semua orang.", "Meminta orang lain untuk mengganggu Anda lebih sering.", "Gunakan 'do not disturb' atau jam fokus.", "Biarkan semua notifikasi menyala."], answer: "Gunakan 'do not disturb' atau jam fokus." },
-      { type: "multiple-choice", question: "Apa manfaat dari 'mencari umpan balik' dari rekan kerja?", options: ["Membuat pekerjaan lebih sulit.", "Membantu Anda mengidentifikasi area yang perlu ditingkatkan.", "Menyebabkan konflik.", "Membuat Anda terlihat tidak kompeten."], answer: "Membantu Anda mengidentifikasi area yang perlu ditingkatkan." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'delegasi'?", options: ["Melakukan semua pekerjaan sendiri.", "Menugaskan tugas kepada orang lain.", "Menghindari pekerjaan.", "Mengerjakan tugas yang tidak penting."], answer: "Menugaskan tugas kepada orang lain." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'prokrastinasi'?", options: ["Melakukan tugas tepat waktu.", "Menunda-nunda pekerjaan.", "Mengatur jadwal.", "Bekerja lebih awal."], answer: "Menunda-nunda pekerjaan." },
-      { type: "multiple-choice", question: "Apa manfaat dari 'komunikasi yang efektif'?", options: ["Tidak ada hubungannya.", "Mengurangi kesalahpahaman dan meningkatkan kolaborasi.", "Menyebabkan konflik.", "Membuat pekerjaan lebih lambat."], answer: "Mengurangi kesalahpahaman dan meningkatkan kolaborasi." },
-      { type: "multiple-choice", question: "Bagaimana 'memiliki jadwal' dapat meningkatkan produktivitas?", options: ["Membuat pekerjaan lebih sulit.", "Menyebabkan kebingungan.", "Memberikan struktur dan membantu Anda tetap pada jalur.", "Membuat Anda terlalu kaku."], answer: "Memberikan struktur dan membantu Anda tetap pada jalur." },
-      { type: "multiple-choice", question: "Mengapa penting untuk menghindari 'gangguan' saat bekerja?", options: ["Membuat pekerjaan lebih menantang.", "Mengurangi fokus dan efisiensi.", "Membuat pekerjaan lebih cepat.", "Tidak ada efek."], answer: "Mengurangi fokus dan efisiensi." },
-      { type: "multiple-choice", question: "Apa yang harus Anda lakukan untuk 'memprioritaskan' pekerjaan dengan efektif?", options: ["Kerjakan semua tugas sekaligus.", "Fokus pada tugas yang paling sulit.", "Gunakan metode seperti Matriks Eisenhower.", "Lakukan tugas yang paling Anda sukai."], answer: "Gunakan metode seperti Matriks Eisenhower." },
-      { type: "multiple-choice", question: "Apa manfaat dari 'mempersiapkan diri' untuk hari berikutnya di malam hari?", options: ["Menambah stres.", "Tidak ada manfaat.", "Memastikan Anda siap dan terorganisir di pagi hari.", "Mengganggu istirahat malam."], answer: "Memastikan Anda siap dan terorganisir di pagi hari." },
-      { type: "multiple-choice", question: "Apa yang harus Anda lakukan untuk 'mengukur' produktivitas Anda?", options: ["Abai terhadap hasil.", "Gunakan indikator seperti pencapaian target dan efisiensi waktu.", "Tidak perlu evaluasi.", "Hanya minta pendapat atasan."], answer: "Gunakan indikator seperti pencapaian target dan efisiensi waktu." },
-      { type: "multiple-choice", question: "Manakah dari berikut ini yang merupakan contoh dari 'tugas penting dan mendesak'?", options: ["Mengerjakan proyek yang penting dengan tenggat waktu dekat.", "Menulis daftar belanja.", "Merencanakan liburan.", "Menonton film."], answer: "Mengerjakan proyek yang penting dengan tenggat waktu dekat." },
-      { type: "multiple-choice", question: "Bagaimana 'lingkungan kerja' yang nyaman dapat meningkatkan produktivitas?", options: ["Tidak ada hubungannya.", "Mengurangi kenyamanan.", "Meningkatkan fokus dan mengurangi stres.", "Membuat Anda ingin tidur."], answer: "Meningkatkan fokus dan mengurangi stres." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'tugas rutin'?", options: ["Tugas yang hanya dilakukan sekali.", "Tugas yang dihindari.", "Tugas yang dilakukan secara berulang-ulang.", "Tugas yang paling sulit."], answer: "Tugas yang dilakukan secara berulang-ulang." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'SMART goal'?", options: ["Tujuan yang Spesifik, Terukur, Dapat Dicapai, Relevan, Berbatas Waktu.", "Tujuan yang Sederhana, Menantang, Ambisius, Realistis, Terbatas."], answer: "Tujuan yang Spesifik, Terukur, Dapat Dicapai, Relevan, Berbatas Waktu." },
-      { type: "multiple-choice", question: "Faktor apa yang paling signifikan dalam menghambat produktivitas kerja?", options: ["Tidur yang cukup.", "Istirahat teratur.", "Gangguan yang tidak terkendali (misalnya, notifikasi media sosial).", "Perencanaan yang matang."], answer: "Gangguan yang tidak terkendali (misalnya, notifikasi media sosial)." },
-      { type: "multiple-choice", question: "Apa manfaat dari menerapkan 'teknik Pomodoro'?", options: ["Meningkatkan fokus dan mengurangi kelelahan mental.", "Membuat pekerjaan lebih lama.", "Mendorong multitasking.", "Tidak ada manfaat."], answer: "Meningktakan fokus dan mengurangi kelelahan mental." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'efektivitas'?", options: ["Melakukan sesuatu dengan cara yang paling efektif.", "Menghasilkan output maksimal.", "Bekerja lebih keras dan lebih lama.", "Melakukan hal yang benar."], answer: "Melakukan hal yang benar." },
-      { type: "multiple-choice", question: "Apa yang dapat Anda lakukan untuk meningkatkan 'konsentrasi'?", options: ["Melakukan banyak tugas sekaligus.", "Menghilangkan gangguan.", "Menjawab setiap email segera.", "Mengabaikan tugas."], answer: "Menghilangkan gangguan." },
-      { type: "multiple-choice", question: "Apa manfaat dari 'menetapkan prioritas'?", options: ["Tidak ada manfaat yang signifikan.", "Mengurangi stres dan membantu mengelola prioritas.", "Menambah kebingungan."], answer: "Mengurangi stres dan membantu mengelola prioritas." },
-      { type: "multiple-choice", question: "Manakah dari berikut ini yang merupakan contoh dari 'tugas mendesak tetapi tidak penting' menurut Matriks Eisenhower?", options: ["Mengerjakan proyek penting.", "Membantu rekan kerja yang membutuhkan bantuan mendadak.", "Menulis laporan tahunan.", "Merencanakan strategi jangka panjang."], answer: "Membantu rekan kerja yang membutuhkan bantuan mendadak." },
-      { type: "multiple-choice", question: "Apa tujuan utama dari 'time-blocking'?", options: ["Menghabiskan waktu lebih banyak.", "Mengalokasikan waktu untuk tugas tertentu agar lebih fokus.", "Membuat jadwal lebih padat.", "Menghindari perencanaan."], answer: "Mengalokasikan waktu untuk tugas tertentu agar lebih fokus." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'tugas yang penting dan tidak mendesak'?", options: ["Tugas yang harus dikerjakan segera.", "Tugas yang dapat ditunda.", "Tugas yang perlu dijadwalkan.", "Tugas yang tidak relevan."], answer: "Tugas yang perlu dijadwalkan." },
-      { type: "multiple-choice", question: "Bagaimana 'tidur yang berkualitas' dapat meningkatkan produktivitas?", options: ["Tidak ada hubungannya.", "Menyebabkan kelelahan.", "Meningkatkan memori dan fungsi kognitif.", "Hanya relevan untuk kesehatan fisik."], answer: "Meningkatkan memori dan fungsi kognitif." },
-      { type: "multiple-choice", question: "Apa yang harus Anda lakukan jika 'merasa kelelahan'?", options: ["Bekerja lebih keras.", "Mengambil istirahat dan beristirahat.", "Mengabaikan perasaan.", "Menyerah."], answer: "Mengambil istirahat dan beristirahat." },
-      { type: "multiple-choice", question: "Apa yang harus Anda lakukan jika Anda menghadapi 'mental block'?", options: ["Meninggalkan pekerjaan sepenuhnya.", "Memaksa diri untuk terus bekerja.", "Beristirahat sejenak, beralih ke tugas yang berbeda, atau melakukan aktivitas fisik ringan.", "Minta orang lain untuk mengerjakan tugas Anda."], answer: "Beristirahat sejenak, beralih ke tugas yang berbeda, atau melakukan aktivitas fisik ringan." },
-      { type: "multiple-choice", question: "Apa yang harus Anda lakukan jika 'merasa tertekan' saat bekerja?", options: ["Menyerah.", "Beristirahat sejenak dan melakukan sesuatu yang menyenangkan.", "Melanjutkan bekerja meskipun Anda tidak bisa fokus.", "Menyalahkan diri sendiri."], answer: "Beristirahat sejenak dan melakukan sesuatu yang menyenangkan." },
-      { type: "multiple-choice", question: "Apa tujuan dari 'delegasi' yang efektif?", options: ["Menyebabkan konflik antar anggota tim.", "Meningkatkan beban kerja seorang manajer.", "Memungkinkan manajer untuk fokus pada tugas prioritas tinggi sementara tugas lain diselesaikan oleh anggota tim.", "Mengurangi kualitas hasil kerja."], answer: "Memungkinkan manajer untuk fokus pada tugas prioritas tinggi sementara tugas lain diselesaikan oleh anggota tim." },
-      { type: "multiple-choice", question: "Alat bantu digital apa yang paling cocok untuk manajemen proyek visual?", options: ["Microsoft Word.", "Trello atau Asana.", "Google Docs.", "Microsoft Excel."], answer: "Trello atau Asana." },
-      { type: "multiple-choice", question: "Apa yang dimaksud dengan 'tujuan yang relevan'?", options: ["Tujuan yang tidak penting.", "Tujuan yang berhubungan dengan kehidupan atau karir Anda.", "Tujuan yang mudah dicapai.", "Tujuan yang sulit."], answer: "Tujuan yang berhubungan dengan kehidupan atau karir Anda." },
-      { type: "essay", question: "Jelaskan mengapa produktivitas penting bagi individu dan organisasi." },
-      { type: "essay", question: "Sebutkan tiga faktor yang dapat meningkatkan produktivitas kerja dan jelaskan masing-masing." },
-      { type: "essay", question: "Deskripsikan situasi di mana Anda berhasil mengatasi prokrastinasi. Apa yang Anda lakukan?" },
-      { type: "essay", question: "Bagaimana Anda mengatur waktu Anda dalam sehari? Jelaskan rutinitas Anda." },
-      { type: "essay", question: "Apa manfaat dari memiliki tujuan yang jelas dalam bekerja?" },
-      { type: "essay", question: "Jelaskan perbedaan antara 'efisiensi' dan 'efektivitas' dalam konteks produktivitas." },
-      { type: "essay", question: "Apa yang Anda lakukan ketika merasa burnout? Bagaimana cara mengatasinya?" },
-      { type: "essay", question: "Bagaimana lingkungan kerja memengaruhi produktivitas Anda? Berikan contoh." },
-      { type: "essay", question: "Apa peran teknologi dalam meningkatkan produktivitas? Sebutkan dua alat dan manfaatnya." },
-      { type: "essay", question: "Jelaskan bagaimana teknik Pomodoro dapat membantu meningkatkan fokus dan hasil kerja." }
+      // 1. Mengumpulkan data dan informasi rencana pelaksanaan peningkatan produktivitas
+      { type: "multiple-choice", question: "Manakah yang BUKAN sumber data primer yang direkomendasikan untuk perencanaan peningkatan produktivitas?", options: ["Wawancara dengan manajemen senior", "Observasi langsung proses kerja", "Laporan industri yang sudah berumur 5 tahun", "Survey karyawan secara anonym"], answer: "Laporan industri yang sudah berumur 5 tahun" },
+      
+      // 2. Menyusun rencana pelaksanaan peningkatan produktivitas
+      { type: "multiple-choice", question: "Apa kelemahan utama dari rencana peningkatan produktivitas yang terlalu ambisius tanpa mempertimbangkan kapasitas organisasi?", options: ["Meningkatkan motivasi karyawan dengan target menantang", "Menghasilkan burnout dan penurunan kualitas kerja", "Mempercepat pencapaian tujuan organisasi", "Mengoptimalkan penggunaan sumber daya yang ada"], answer: "Menghasilkan burnout dan penurunan kualitas kerja" },
+      
+      // 3. Mengevaluasi sistem perencanaan peningkatan produktivitas
+      { type: "multiple-choice", question: "Indikator apa yang PALING relevan untuk mengevaluasi keberhasilan sistem perencanaan produktivitas?", options: ["Jumlah halaman dokumen perencanaan", "Kesesuaian antara target yang direncanakan dengan hasil aktual", "Banyaknya meeting yang diadakan", "Kepuasan subjektif manajer proyek"], answer: "Kesesuaian antara target yang direncanakan dengan hasil aktual" },
+      
+      // 4. Menetapkan target dan sasaran organisasi peningkatan produktivitas
+      { type: "multiple-choice", question: "Mengapa target produktivitas sebaiknya ditetapkan dengan menggunakan pendekatan partisipatif?", options: ["Agar target dapat ditetapkan lebih rendah dari kemampuan sebenarnya", "Untuk meningkatkan komitmen dan kepemilikan karyawan terhadap target", "Karena manajemen tidak memahami operasional harian", "Agar target dapat diubah sewaktu-waktu tanpa prosedur formal"], answer: "Untuk meningkatkan komitmen dan kepemilikan karyawan terhadap target" },
+      
+      // 5. Menyiapkan organisasi peningkatan produktivitas
+      { type: "multiple-choice", question: "Apa risiko terbesar jika tim peningkatan produktivitas hanya terdiri dari manajer level atas saja?", options: ["Keputusan menjadi lebih cepat karena sedikitnya anggota", "Kurangnya pemahaman tentang masalah operasional di lapangan", "Anggaran yang lebih besar tersedia untuk program", "Komunikasi yang lebih efisien dengan direksi"], answer: "Kurangnya pemahaman tentang masalah operasional di lapangan" },
+      
+      // 6. Menetapkan indikator keberhasilan peningkatan produktivitas
+      { type: "multiple-choice", question: "Manakah yang merupakan contoh indikator leading (mendahului) bukan lagging (mengikuti) untuk mengukur produktivitas?", options: ["Jumlah output per jam kerja", "Tingkat kepuasan pelanggan", "Frekuensi pelatihan keterampilan baru yang diikuti karyawan", "Total penjualan triwulan terakhir"], answer: "Frekuensi pelatihan keterampilan baru yang diikuti karyawan" },
+      
+      // 7. Merencanakan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
+      { type: "multiple-choice", question: "Apa pertimbangan utama ketika memilih teknik peningkatan produktivitas untuk diimplementasikan?", options: ["Popularitas teknik di perusahaan lain", "Kesesuaian dengan budaya dan kebutuhan organisasi", "Ketersediaan konsultan eksternal yang ahli", "Kemudahan dalam pengimplementasiannya"], answer: "Kesesuaian dengan budaya dan kebutuhan organisasi" },
+      
+      // 8. Melaksanakan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
+      { type: "multiple-choice", question: "Mengapa penting untuk menyelenggarakan pilot project sebelum menerapkan teknik produktivitas secara keseluruhan?", options: ["Untuk menghabiskan anggaran pelatihan yang tersedia", "Mengidentifikasi potensi masalah dan menyesuaikan pendekatan", "Memperpanjang durasi proyek peningkatan produktivitas", "Memberi kesan bahwa organisasi serius dengan perubahan"], answer: "Mengidentifikasi potensi masalah dan menyesuaikan pendekatan" },
+      
+      // 9. Mengendalikan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
+      { type: "multiple-choice", question: "Apa fungsi utama dari dashboard monitoring dalam pelaksanaan program peningkatan produktivitas?", options: ["Membuat visualisasi yang menarik untuk presentasi direksi", "Memantau kemajuan dan mendeteksi penyimpangan secara real-time", "Menggantikan kebutuhan meeting evaluasi rutin", "Memenuhi persyaratan dokumentasi ISO"], answer: "Memantau kemajuan dan mendeteksi penyimpangan secara real-time" },
+      
+      // 10. Merencanakan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
+      { type: "multiple-choice", question: "Faktor apa yang paling menentukan keberhasilan program bimbingan penerapan teknik produktivitas?", options: ["Kualitas materi presentasi dan modul pelatihan", "Keterlibatan dan komitmen manajemen puncak", "Ketersediaan anggaran untuk konsultan eksternal", "Kemewahan venue pelatihan yang digunakan"], answer: "Keterlibatan dan komitment manajemen puncak" },
+      
+      // 11. Melaksanakan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
+      { type: "multiple-choice", question: "Mengapa metode pembelajaran orang dewasa (andragogi) penting dalam bimbingan teknik produktivitas?", options: ["Karena peserta training adalah orang dewasa yang sudah memiliki pengalaman", "Agar training terlihat lebih profesional dan berbasis teori", "Karena lebih murah dibanding metode pedagogi", "Untuk memenuhi persyaratan kurikulum yang ditetapkan"], answer: "Karena peserta training adalah orang dewasa yang sudah memiliki pengalaman" },
+      
+      // 12. Mengendalikan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
+      { type: "multiple-choice", question: "Apa tindakan korektif yang paling tepat ketika implementasi teknik produktivitas tidak menunjukkan hasil yang diharapkan?", options: ["Menyalahkan peserta training karena tidak menerapkan dengan benar", "Mengevaluasi dan menyesuaikan pendekatan implementasi", "Menghentikan program dan mencari teknik lainnya", "Melanjutkan program dengan harapan hasil akan membaik dengan sendirinya"], answer: "Mengevaluasi dan menyesuaikan pendekatan implementasi" },
+
+      // Soal esai
+      { type: "essay", question: "Jelaskan langkah-langkah sistematis dalam mengumpulkan data dan informasi untuk perencanaan peningkatan produktivitas di suatu organisasi." },
+      { type: "essay", question: "Bagaimana Anda menyusun rencana pelaksanaan peningkatan produktivitas yang mempertimbangkan keterbatasan sumber daya dan resistensi terhadap perubahan?" },
+      { type: "essay", question: "Jelaskan metode evaluasi yang komprehensif untuk menilai efektivitas sistem perencanaan peningkatan produktivitas." },
+      { type: "essay", question: "Bagaimana cara menetapkan target dan sasaran peningkatan produktivitas yang ambisius namun tetap realistis dan dapat dicapai?" },
+      { type: "essay", question: "Jelaskan strategi menyiapkan organisasi untuk program peningkatan produktivitas, termasuk pembentukan tim dan alokasi sumber daya." },
+      { type: "essay", question: "Sebutkan dan jelaskan indikator keberhasilan yang dapat digunakan untuk mengukur peningkatan produktivitas dari berbagai perspektif." },
+      { type: "essay", question: "Rencanakan program bimbingan penerapan alat dan teknik peningkatan produktivitas untuk organisasi dengan karyawan yang memiliki latar belakang beragam." },
+      { type: "essay", question: "Jelaskan pendekatan yang efektif untuk melaksanakan bimbingan penerapan metode peningkatan produktivitas di tengah kesibukan operasional sehari-hari." },
+      { type: "essay", question: "Bagaimana cara mengendalikan dan memantau pelaksanaan bimbingan penerapan teknik peningkatan produktivitas untuk memastikan hasil yang diharapkan?" },
+      { type: "essay", question: "Jelaskan bagaimana mengukur ROI (Return on Investment) dari program peningkatan produktivitas yang telah dilaksanakan." }
     ];
 
     let currentQuestionIndex = 0;
@@ -197,7 +194,7 @@
       app.innerHTML = `
         <div class="flex flex-col items-center justify-center h-full text-center space-y-6">
           <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Peningkatan Produktivitas</h2>
-          <p class="text-gray-600 leading-relaxed">Selamat datang di uji kompetensi. Uji ini terdiri dari 50 soal pilihan ganda dan 10 soal esai. Total 60 soal.</p>
+          <p class="text-gray-600 leading-relaxed">Selamat datang di uji kompetensi. Uji ini terdiri dari 40 soal pilihan ganda dan 10 soal esai. Total 50 soal.</p>
           <p class="text-sm text-gray-500">Waktu pengerjaan: 60 menit</p>
           <button onclick="startTest()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             Mulai Uji
@@ -293,6 +290,7 @@
       app.innerHTML = `
         <div class="h-full flex flex-col">
           <div class="mb-4">
+            <span class="question-type">${q.type === 'multiple-choice' ? 'Pilihan Ganda' : 'Esai'}</span>
             <h3 class="text-lg sm:text-xl font-semibold mb-4 text-gray-800 leading-relaxed">${q.question}</h3>
           </div>
           
@@ -423,9 +421,20 @@
         </div>`;
       }
       
+      // Hitung nilai akhir (asumsi esai nilainya perfect jika dijawab)
+      const essayScore = essayAnswers.filter(a => a.answer && a.answer.trim() !== '').length;
+      const totalScore = multipleChoiceScore + essayScore;
+      const maxScore = totalMultipleChoice + essayAnswers.length;
+      const percentage = Math.round((totalScore / maxScore) * 100);
+      
       app.innerHTML = `
         <div class="flex flex-col h-full">
           <h1 class="text-2xl sm:text-3xl font-bold mb-2 text-blue-600 text-center">Hasil Uji Kompetensi</h1>
+          <div class="bg-blue-50 p-4 rounded-lg mb-4 text-center">
+            <p class="text-2xl font-bold">Nilai: ${percentage}%</p>
+            <p class="text-lg">Skor: ${totalScore}/${maxScore}</p>
+          </div>
+          
           <p class="text-lg text-gray-700 text-center mb-6">Skor Pilihan Ganda: ${multipleChoiceScore}/${totalMultipleChoice}</p>
           
           <div class="grid grid-cols-3 gap-3 mb-6">
