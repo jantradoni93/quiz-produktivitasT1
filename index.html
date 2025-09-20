@@ -68,6 +68,21 @@
         max-height: calc(80vh - 200px);
       }
     }
+    /* Custom scrollbar */
+    .scrollable-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scrollable-content::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    .scrollable-content::-webkit-scrollbar-thumb {
+      background: #c5c5c5;
+      border-radius: 10px;
+    }
+    .scrollable-content::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
   </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 bg-gray-100">
@@ -76,7 +91,7 @@
     <div class="p-4 bg-white border-b border-gray-200">
       <div class="flex justify-between items-center mb-2">
         <h1 class="text-lg font-bold text-gray-800">Uji Kompetensi</h1>
-        <div id="timer" class="text-red-600 font-bold text-lg timer-warning">60:00</div>
+        <div id="timer" class="text-red-600 font-bold text-lg">60:00</div>
       </div>
       <div class="progress-bar">
         <div id="progress" class="progress-fill" style="width: 0%"></div>
@@ -145,7 +160,7 @@
       { type: "multiple-choice", question: "Apa yang dimaksud dengan 'tugas rutin'?", options: ["Tugas yang hanya dilakukan sekali.", "Tugas yang dihindari.", "Tugas yang dilakukan secara berulang-ulang.", "Tugas yang paling sulit."], answer: "Tugas yang dilakukan secara berulang-ulang." },
       { type: "multiple-choice", question: "Apa yang dimaksud dengan 'SMART goal'?", options: ["Tujuan yang Spesifik, Terukur, Dapat Dicapai, Relevan, Berbatas Waktu.", "Tujuan yang Sederhana, Menantang, Ambisius, Realistis, Terbatas."], answer: "Tujuan yang Spesifik, Terukur, Dapat Dicapai, Relevan, Berbatas Waktu." },
       { type: "multiple-choice", question: "Faktor apa yang paling signifikan dalam menghambat produktivitas kerja?", options: ["Tidur yang cukup.", "Istirahat teratur.", "Gangguan yang tidak terkendali (misalnya, notifikasi media sosial).", "Perencanaan yang matang."], answer: "Gangguan yang tidak terkendali (misalnya, notifikasi media sosial)." },
-      { type: "multiple-choice", question: "Apa manfaat dari menerapkan 'teknik Pomodoro'?", options: ["Meningkatkan fokus dan mengurangi kelelahan mental.", "Membuat pekerjaan lebih lama.", "Mendorong multitasking.", "Tidak ada manfaat."], answer: "Meningkatkan fokus dan mengurangi kelelahan mental." },
+      { type: "multiple-choice", question: "Apa manfaat dari menerapkan 'teknik Pomodoro'?", options: ["Meningkatkan fokus dan mengurangi kelelahan mental.", "Membuat pekerjaan lebih lama.", "Mendorong multitasking.", "Tidak ada manfaat."], answer: "Meningktakan fokus dan mengurangi kelelahan mental." },
       { type: "multiple-choice", question: "Apa yang dimaksud dengan 'efektivitas'?", options: ["Melakukan sesuatu dengan cara yang paling efektif.", "Menghasilkan output maksimal.", "Bekerja lebih keras dan lebih lama.", "Melakukan hal yang benar."], answer: "Melakukan hal yang benar." },
       { type: "multiple-choice", question: "Apa yang dapat Anda lakukan untuk meningkatkan 'konsentrasi'?", options: ["Melakukan banyak tugas sekaligus.", "Menghilangkan gangguan.", "Menjawab setiap email segera.", "Mengabaikan tugas."], answer: "Menghilangkan gangguan." },
       { type: "multiple-choice", question: "Apa manfaat dari 'menetapkan prioritas'?", options: ["Tidak ada manfaat yang signifikan.", "Mengurangi stres dan membantu mengelola prioritas.", "Menambah kebingungan."], answer: "Mengurangi stres dan membantu mengelola prioritas." },
@@ -172,7 +187,6 @@
     ];
 
     let currentQuestionIndex = 0;
-    let multipleChoiceScore = 0;
     let userAnswers = [];
     let shuffledQuestions = [];
     let timer;
@@ -190,6 +204,7 @@
           </button>
         </div>`;
       statusDisplay.textContent = "Persiapan";
+      timerDisplay.classList.remove('timer-warning');
     }
 
     function startTest() {
@@ -202,11 +217,17 @@
         [mcqQuestions[i], mcqQuestions[j]] = [mcqQuestions[j], mcqQuestions[i]];
       }
       
+      // Acak soal esai
+      for (let i = essayQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [essayQuestions[i], essayQuestions[j]] = [essayQuestions[j], essayQuestions[i]];
+      }
+      
       shuffledQuestions = [...mcqQuestions, ...essayQuestions];
       currentQuestionIndex = 0;
-      multipleChoiceScore = 0;
       userAnswers = Array(shuffledQuestions.length).fill(null);
       isTestStarted = true;
+      timeLeft = 60 * 60; // Reset waktu
       
       // Mulai timer
       startTimer();
@@ -216,6 +237,8 @@
     }
 
     function startTimer() {
+      clearInterval(timer); // Hapus timer sebelumnya jika ada
+      
       timer = setInterval(() => {
         timeLeft--;
         
@@ -225,7 +248,7 @@
         timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         
         // Warna merah saat waktu kurang dari 10 menit
-        if (timeLeft <= 600) {
+        if (timeLeft <= 600 && timeLeft > 0) {
           timerDisplay.classList.add('timer-warning');
         }
         
@@ -235,12 +258,6 @@
           showResults();
         }
       }, 1000);
-    }
-
-    function formatTime(seconds) {
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
     function renderQuestion() {
@@ -269,7 +286,7 @@
       } else {
         optionsHtml = `
           <div class="mb-4">
-            <textarea id="essay-answer" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" placeholder="Tulis jawaban Anda di sini...">${answerValue || ''}</textarea>
+            <textarea id="essay-answer" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y" placeholder="Tulis jawaban Anda di sini...">${answerValue || ''}</textarea>
           </div>`;
       }
 
@@ -309,17 +326,21 @@
         question: currentQuestion.question,
         answer: selectedOption
       };
-      
-      // Update skor jika jawaban benar
-      if (selectedOption === currentQuestion.answer) {
-        multipleChoiceScore++;
-      } else if (userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].answer === currentQuestion.answer) {
-        // Kurangi skor jika sebelumnya benar tapi sekarang diganti ke salah
-        multipleChoiceScore--;
-      }
     }
 
     function goToPreviousQuestion() {
+      // Simpan jawaban esai terlebih dahulu
+      if (shuffledQuestions[currentQuestionIndex].type === 'essay') {
+        const textarea = document.getElementById('essay-answer');
+        if (textarea) {
+          userAnswers[currentQuestionIndex] = {
+            type: 'essay',
+            question: shuffledQuestions[currentQuestionIndex].question,
+            answer: textarea.value
+          };
+        }
+      }
+      
       if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
         renderQuestion();
@@ -341,10 +362,7 @@
       } else {
         const textarea = document.getElementById('essay-answer');
         userAnswer = textarea.value.trim();
-        if (!userAnswer) {
-          showAlert('Jawaban esai tidak boleh kosong!');
-          return;
-        }
+        // Tidak memaksa jawaban esai harus diisi
       }
       
       // Simpan jawaban
@@ -353,13 +371,6 @@
         question: q.question,
         answer: userAnswer
       };
-      
-      // Update skor untuk pilihan ganda
-      if (q.type === 'multiple-choice') {
-        if (userAnswer === q.answer) {
-          multipleChoiceScore++;
-        }
-      }
       
       // Lanjut ke soal berikutnya
       currentQuestionIndex++;
@@ -381,11 +392,20 @@
     function showResults() {
       clearInterval(timer);
       
+      // Hitung skor pilihan ganda
+      let multipleChoiceScore = 0;
       const totalMultipleChoice = shuffledQuestions.filter(q => q.type === 'multiple-choice').length;
-      const correctAnswers = multipleChoiceScore;
-      const wrongAnswers = totalMultipleChoice - correctAnswers;
-      const unanswered = shuffledQuestions.filter((q, i) => !userAnswers[i]).length;
-      const essayAnswers = userAnswers.filter(a => a && a.type === 'essay');
+      
+      for (let i = 0; i < shuffledQuestions.length; i++) {
+        const question = shuffledQuestions[i];
+        if (question.type === 'multiple-choice' && userAnswers[i] && userAnswers[i].answer === question.answer) {
+          multipleChoiceScore++;
+        }
+      }
+      
+      const wrongAnswers = totalMultipleChoice - multipleChoiceScore;
+      const unanswered = userAnswers.filter(answer => answer === null).length;
+      const essayAnswers = userAnswers.filter((a, i) => a && shuffledQuestions[i].type === 'essay');
       
       let essaySummaryHtml = '';
       if (essayAnswers.length > 0) {
@@ -396,7 +416,7 @@
               <div class="p-4 rounded-lg bg-gray-100 border border-gray-300 text-left">
                 <p class="font-semibold text-gray-800 mb-2">Soal Esai ${index + 1}: ${item.question}</p>
                 <p class="text-sm font-medium">Jawaban Anda:</p>
-                <p class="text-sm text-gray-700">${item.answer}</p>
+                <p class="text-sm text-gray-700">${item.answer || '(Tidak dijawab)'}</p>
               </div>
             `).join('')}
           </div>
@@ -406,11 +426,11 @@
       app.innerHTML = `
         <div class="flex flex-col h-full">
           <h1 class="text-2xl sm:text-3xl font-bold mb-2 text-blue-600 text-center">Hasil Uji Kompetensi</h1>
-          <p class="text-lg text-gray-700 text-center mb-6">Skor Pilihan Ganda: ${correctAnswers}/${totalMultipleChoice}</p>
+          <p class="text-lg text-gray-700 text-center mb-6">Skor Pilihan Ganda: ${multipleChoiceScore}/${totalMultipleChoice}</p>
           
           <div class="grid grid-cols-3 gap-3 mb-6">
             <div class="text-center p-3 bg-green-100 rounded-lg">
-              <div class="text-2xl font-bold text-green-600">${correctAnswers}</div>
+              <div class="text-2xl font-bold text-green-600">${multipleChoiceScore}</div>
               <div class="text-sm text-green-700">Benar</div>
             </div>
             <div class="text-center p-3 bg-red-100 rounded-lg">
@@ -433,6 +453,7 @@
         </div>`;
       
       statusDisplay.textContent = "Selesai";
+      timerDisplay.classList.remove('timer-warning');
     }
 
     function showAlert(message) {
