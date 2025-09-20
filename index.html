@@ -106,7 +106,7 @@
         <div id="progress" class="progress-fill" style="width: 0%"></div>
       </div>
       <div class="flex justify-between text-xs text-gray-500">
-        <span>Soal <span id="current-num">1</span> dari <span id="total-num">60</span></span>
+        <span>Soal <span id="current-num">1</span> dari <span id="total-num">35</span></span>
         <span id="status">Persiapan</span>
       </div>
     </div>
@@ -115,7 +115,7 @@
     <div id="app" class="flex-1 p-4 overflow-hidden">
       <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center space-y-6">
         <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Peningkatan Produktivitas</h2>
-        <p class="text-gray-600 leading-relaxed">Selamat datang di uji kompetensi. Uji ini terdiri dari 40 soal pilihan ganda dan 10 soal esai. Total 50 soal.</p>
+        <p class="text-gray-600 leading-relaxed">Selamat datang di uji kompetensi. Uji ini terdiri dari 30 soal pilihan ganda dan 5 soal esai. Total 35 soal.</p>
         <p class="text-sm text-gray-500">Waktu pengerjaan: 60 menit</p>
         <button onclick="startTest()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
           Mulai Uji
@@ -136,51 +136,67 @@
     const questions = [
       // 1. Mengumpulkan data dan informasi rencana pelaksanaan peningkatan produktivitas
       { type: "multiple-choice", question: "Manakah yang BUKAN sumber data primer yang direkomendasikan untuk perencanaan peningkatan produktivitas?", options: ["Wawancara dengan manajemen senior", "Observasi langsung proses kerja", "Laporan industri yang sudah berumur 5 tahun", "Survey karyawan secara anonym"], answer: "Laporan industri yang sudah berumur 5 tahun" },
+      { type: "multiple-choice", question: "Teknik pengumpulan data mana yang paling efektif untuk memahami proses kerja yang sebenarnya?", options: ["Studi literatur", "Wawancara terstruktur", "Observasi langsung", "Kuesioner tertutup"], answer: "Observasi langsung" },
+      { type: "multiple-choice", question: "Apa keuntungan utama menggunakan data kuantitatif dalam perencanaan peningkatan produktivitas?", options: ["Memberikan konteks yang kaya", "Mudah diinterpretasikan oleh semua orang", "Dapat diukur dan dianalisis secara statistik", "Lebih murah untuk dikumpulkan"], answer: "Dapat diukur dan dianalisis secara statistik" },
       
       // 2. Menyusun rencana pelaksanaan peningkatan produktivitas
       { type: "multiple-choice", question: "Apa kelemahan utama dari rencana peningkatan produktivitas yang terlalu ambisius tanpa mempertimbangkan kapasitas organisasi?", options: ["Meningkatkan motivasi karyawan dengan target menantang", "Menghasilkan burnout dan penurunan kualitas kerja", "Mempercepat pencapaian tujuan organisasi", "Mengoptimalkan penggunaan sumber daya yang ada"], answer: "Menghasilkan burnout dan penurunan kualitas kerja" },
+      { type: "multiple-choice", question: "Komponen mana yang HARUS dimasukkan dalam rencana pelaksanaan peningkatan produktivitas?", options: ["Analisis pesaing lengkap", "Rencana komunikasi dan keterlibatan stakeholder", "Proyeksi keuangan 5 tahun", "Struktur gaji seluruh karyawan"], answer: "Rencana komunikasi dan keterlibatan stakeholder" },
+      { type: "multiple-choice", question: "Mengapa penting untuk menyertakan rencana mitigasi risiko dalam perencanaan produktivitas?", options: ["Agar terlihat profesional di mata direksi", "Untuk mengantisipasi dan mengatasi hambatan potensial", "Karena merupakan persyaratan standar ISO", "Untuk menghabiskan anggaran yang dialokasikan"], answer: "Untuk mengantisipasi dan mengatasi hambatan potensial" },
       
       // 3. Mengevaluasi sistem perencanaan peningkatan produktivitas
       { type: "multiple-choice", question: "Indikator apa yang PALING relevan untuk mengevaluasi keberhasilan sistem perencanaan produktivitas?", options: ["Jumlah halaman dokumen perencanaan", "Kesesuaian antara target yang direncanakan dengan hasil aktual", "Banyaknya meeting yang diadakan", "Kepuasan subjektif manajer proyek"], answer: "Kesesuaian antara target yang direncanakan dengan hasil aktual" },
+      { type: "multiple-choice", question: "Kapan sebaiknya evaluasi terhadap sistem perencanaan produktivitas dilakukan?", options: ["Hanya pada akhir proyek", "Secara berkala selama implementasi", "Hanya ketika terjadi masalah serius", "Setiap lima tahun sekali"], answer: "Secara berkala selama implementasi" },
+      { type: "multiple-choice", question: "Apa tujuan utama dari evaluasi formatif dalam sistem perencanaan produktivitas?", options: ["Memberikan nilai akhir terhadap kinerja", "Memperbaiki proses yang sedang berjalan", "Memenuhi persyaratan audit", "Membandingkan dengan organisasi lain"], answer: "Memperbaiki proses yang sedang berjalan" },
       
       // 4. Menetapkan target dan sasaran organisasi peningkatan produktivitas
       { type: "multiple-choice", question: "Mengapa target produktivitas sebaiknya ditetapkan dengan menggunakan pendekatan partisipatif?", options: ["Agar target dapat ditetapkan lebih rendah dari kemampuan sebenarnya", "Untuk meningkatkan komitmen dan kepemilikan karyawan terhadap target", "Karena manajemen tidak memahami operasional harian", "Agar target dapat diubah sewaktu-waktu tanpa prosedur formal"], answer: "Untuk meningkatkan komitmen dan kepemilikan karyawan terhadap target" },
+      { type: "multiple-choice", question: "Prinsip SMART dalam penentuan target produktivitas mencakup semua berikut, KECUALI:", options: ["Spesifik", "Terukur", "Abstrak", "Relevan"], answer: "Abstrak" },
+      { type: "multiple-choice", question: "Apa dampak negatif dari menetapkan target produktivitas yang tidak realistis?", options: ["Meningkatkan kreativitas karyawan", "Menurunkan moral dan motivasi kerja", "Memperbaiki kualitas output", "Mengurangi beban kerja manajemen"], answer: "Menurunkan moral dan motivasi kerja" },
       
       // 5. Menyiapkan organisasi peningkatan produktivitas
       { type: "multiple-choice", question: "Apa risiko terbesar jika tim peningkatan produktivitas hanya terdiri dari manajer level atas saja?", options: ["Keputusan menjadi lebih cepat karena sedikitnya anggota", "Kurangnya pemahaman tentang masalah operasional di lapangan", "Anggaran yang lebih besar tersedia untuk program", "Komunikasi yang lebih efisien dengan direksi"], answer: "Kurangnya pemahaman tentang masalah operasional di lapangan" },
+      { type: "multiple-choice", question: "Mengapa penting untuk melibatkan perwakilan dari berbagai level dalam tim produktivitas?", options: ["Agar jumlah anggota tim lebih banyak", "Untuk mendapatkan perspektif yang beragam dan komprehensif", "Karena merupakan persyaratan regulasi", "Agar meeting lebih hidup dengan banyak peserta"], answer: "Untuk mendapatkan perspektif yang beragam dan komprehensif" },
+      { type: "multiple-choice", question: "Apa fungsi utama dari champion atau agen perubahan dalam organisasi produktivitas?", options: ["Mengawasi kinerja karyawan", "Mendorong adopsi dan penerapan inisiatif", "Menyusun laporan keuangan", "Mengelola konflik interpersonal"], answer: "Mendorong adopsi dan penerapan inisiatif" },
       
       // 6. Menetapkan indikator keberhasilan peningkatan produktivitas
       { type: "multiple-choice", question: "Manakah yang merupakan contoh indikator leading (mendahului) bukan lagging (mengikuti) untuk mengukur produktivitas?", options: ["Jumlah output per jam kerja", "Tingkat kepuasan pelanggan", "Frekuensi pelatihan keterampilan baru yang diikuti karyawan", "Total penjualan triwulan terakhir"], answer: "Frekuensi pelatihan keterampilan baru yang diikuti karyawan" },
+      { type: "multiple-choice", question: "Mengapa penting untuk memiliki kombinasi indikator kuantitatif dan kualitatif?", options: ["Agar laporan terlihat lebih profesional", "Untuk memberikan gambaran yang lebih lengkap dan seimbang", "Karena manajemen meminta kedua jenis indikator", "Agar dapat membandingkan dengan perusahaan lain"], answer: "Untuk memberikan gambaran yang lebih lengkap dan seimbang" },
+      { type: "multiple-choice", question: "Apa kelemahan utama dari indikator produktivitas yang hanya berfokus pada output tanpa mempertimbangkan input?", options: ["Mendorong inefisiensi dalam penggunaan sumber daya", "Terlalu sederhana untuk diimplementasikan", "Mudah dimanipulasi oleh karyawan", "Tidak dapat diukur secara objektif"], answer: "Mendorong inefisiensi dalam penggunaan sumber daya" },
       
       // 7. Merencanakan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
       { type: "multiple-choice", question: "Apa pertimbangan utama ketika memilih teknik peningkatan produktivitas untuk diimplementasikan?", options: ["Popularitas teknik di perusahaan lain", "Kesesuaian dengan budaya dan kebutuhan organisasi", "Ketersediaan konsultan eksternal yang ahli", "Kemudahan dalam pengimplementasiannya"], answer: "Kesesuaian dengan budaya dan kebutuhan organisasi" },
+      { type: "multiple-choice", question: "Faktor apa yang paling menentukan keberhasilan program bimbingan penerapan teknik produktivitas?", options: ["Kualitas materi presentasi dan modul pelatihan", "Keterlibatan dan komitmen manajemen puncak", "Ketersediaan anggaran untuk konsultan eksternal", "Kemewahan venue pelatihan yang digunakan"], answer: "Keterlibatan dan komitmen manajemen puncak" },
+      { type: "multiple-choice", question: "Apa langkah pertama dalam merencanakan bimbingan penerapan teknik produktivitas?", options: ["Menentukan anggaran", "Melakukan analisis kebutuhan pelatihan", "Memilih vendor pelatihan", "Menjadwalkan sesi pelatihan"], answer: "Melakukan analisis kebutuhan pelatihan" },
       
       // 8. Melaksanakan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
       { type: "multiple-choice", question: "Mengapa penting untuk menyelenggarakan pilot project sebelum menerapkan teknik produktivitas secara keseluruhan?", options: ["Untuk menghabiskan anggaran pelatihan yang tersedia", "Mengidentifikasi potensi masalah dan menyesuaikan pendekatan", "Memperpanjang durasi proyek peningkatan produktivitas", "Memberi kesan bahwa organisasi serius dengan perubahan"], answer: "Mengidentifikasi potensi masalah dan menyesuaikan pendekatan" },
+      { type: "multiple-choice", question: "Mengapa metode pembelajaran orang dewasa (andragogi) penting dalam bimbingan teknik produktivitas?", options: ["Karena peserta training adalah orang dewasa yang sudah memiliki pengalaman", "Agar training terlihat lebih profesional dan berbasis teori", "Karena lebih murah dibanding metode pedagogi", "Untuk memenuhi persyaratan kurikulum yang ditetapkan"], answer: "Karena peserta training adalah orang dewasa yang sudah memiliki pengalaman" },
+      { type: "multiple-choice", question: "Apa keuntungan utama menggunakan pendekatan experiential learning dalam bimbingan teknik produktivitas?", options: ["Mengurangi waktu yang dibutuhkan untuk pelatihan", "Memungkinkan peserta menerapkan langsung konsep yang dipelajari", "Lebih mudah untuk dievaluasi hasilnya", "Tidak memerlukan fasilitator yang berpengalaman"], answer: "Memungkinkan peserta menerapkan langsung konsep yang dipelajari" },
       
       // 9. Mengendalikan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
       { type: "multiple-choice", question: "Apa fungsi utama dari dashboard monitoring dalam pelaksanaan program peningkatan produktivitas?", options: ["Membuat visualisasi yang menarik untuk presentasi direksi", "Memantau kemajuan dan mendeteksi penyimpangan secara real-time", "Menggantikan kebutuhan meeting evaluasi rutin", "Memenuhi persyaratan dokumentasi ISO"], answer: "Memantau kemajuan dan mendeteksi penyimpangan secara real-time" },
+      { type: "multiple-choice", question: "Apa tindakan korektif yang paling tepat ketika implementasi teknik produktivitas tidak menunjukkan hasil yang diharapkan?", options: ["Menyalahkan peserta training karena tidak menerapkan dengan benar", "Mengevaluasi dan menyesuaikan pendekatan implementasi", "Menghentikan program dan mencari teknik lainnya", "Melanjutkan program dengan harapan hasil akan membaik dengan sendirinya"], answer: "Mengevaluasi dan menyesuaikan pendekatan implementasi" },
+      { type: "multiple-choice", question: "Mengapa penting untuk melakukan evaluasi pasca-implementasi?", options: ["Untuk menghukum mereka yang tidak kooperatif", "Mengidentifikasi pelajaran yang dapat diterapkan di masa depan", "Memenuhi persyaratan audit internal", "Mengisi waktu antara proyek yang sedang berjalan"], answer: "Mengidentifikasi pelajaran yang dapat diterapkan di masa depan" },
       
       // 10. Merencanakan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
-      { type: "multiple-choice", question: "Faktor apa yang paling menentukan keberhasilan program bimbingan penerapan teknik produktivitas?", options: ["Kualitas materi presentasi dan modul pelatihan", "Keterlibatan dan komitmen manajemen puncak", "Ketersediaan anggaran untuk konsultan eksternal", "Kemewahan venue pelatihan yang digunakan"], answer: "Keterlibatan dan komitment manajemen puncak" },
+      { type: "multiple-choice", question: "Apa yang membedakan perencanaan bimbingan untuk teknik produktivitas yang berbeda?", options: ["Semua teknik membutuhkan pendekatan yang sama", "Tingkat kompleksitas dan dampaknya terhadap organisasi", "Jumlah peserta yang akan mengikuti bimbingan", "Warna modul pelatihan yang digunakan"], answer: "Tingkat kompleksitas dan dampaknya terhadap organisasi" },
+      { type: "multiple-choice", question: "Mengapa penting untuk menyelaraskan rencana bimbingan dengan tujuan strategis organisasi?", options: ["Agar mendapatkan persetujuan anggaran lebih mudah", "Untuk memastikan dukungan berkelanjutan dari manajemen puncak", "Karena merupakan persyaratan dari badan sertifikasi", "Agar pelatihan dapat dijadwalkan pada waktu yang tepat"], answer: "Untuk memastikan dukungan berkelanjutan dari manajemen puncak" },
       
       // 11. Melaksanakan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
-      { type: "multiple-choice", question: "Mengapa metode pembelajaran orang dewasa (andragogi) penting dalam bimbingan teknik produktivitas?", options: ["Karena peserta training adalah orang dewasa yang sudah memiliki pengalaman", "Agar training terlihat lebih profesional dan berbasis teori", "Karena lebih murah dibanding metode pedagogi", "Untuk memenuhi persyaratan kurikulum yang ditetapkan"], answer: "Karena peserta training adalah orang dewasa yang sudah memiliki pengalaman" },
+      { type: "multiple-choice", question: "Apa tantangan terbesar dalam melaksanakan bimbingan teknik produktivitas?", options: ["Mengatur jadwal yang sesuai untuk semua peserta", "Mengatasi resistensi terhadap perubahan", "Menyediakan konsumsi yang memadai", "Memilih ruang training yang nyaman"], answer: "Mengatasi resistensi terhadap perubahan" },
+      { type: "multiple-choice", question: "Bagaimana sebaiknya menangani peserta yang skeptis selama sesi bimbingan?", options: ["Mengabaikan mereka agar tidak mengganggu yang lain", "Menghadapi skeptisisme secara langsung dengan contoh nyata", "Meminta mereka keluar dari sesi training", "Menjanjikan insentif jika mereka berpartisipasi"], answer: "Menghadapi skeptisisme secara langsung dengan contoh nyata" },
       
       // 12. Mengendalikan bimbingan penerapan alat, teknik dan metode peningkatan produktivitas
-      { type: "multiple-choice", question: "Apa tindakan korektif yang paling tepat ketika implementasi teknik produktivitas tidak menunjukkan hasil yang diharapkan?", options: ["Menyalahkan peserta training karena tidak menerapkan dengan benar", "Mengevaluasi dan menyesuaikan pendekatan implementasi", "Menghentikan program dan mencari teknik lainnya", "Melanjutkan program dengan harapan hasil akan membaik dengan sendirinya"], answer: "Mengevaluasi dan menyesuaikan pendekatan implementasi" },
+      { type: "multiple-choice", question: "Apa indikator utama bahwa bimbingan teknik produktivitas berjalan efektif?", options: ["Seluruh peserta hadir tepat waktu", "Peserta dapat menerapkan teknik yang dipelajari dalam pekerjaan", "Modul training telah didistribusikan kepada semua peserta", "Sesi training selesai sesuai jadwal yang direncanakan"], answer: "Peserta dapat menerapkan teknik yang dipelajari dalam pekerjaan" },
+      { type: "multiple-choice", question: "Mengapa penting untuk melakukan penilaian sebelum dan sesudah bimbingan?", options: ["Untuk menguji intelligence peserta", "Mengukur peningkatan pengetahuan dan keterampilan", "Memenuhi persyaratan administrasi HR", "Membandingkan peserta yang satu dengan yang lain"], answer: "Mengukur peningkatan pengetahuan dan keterampilan" },
 
-      // Soal esai
-      { type: "essay", question: "Jelaskan langkah-langkah sistematis dalam mengumpulkan data dan informasi untuk perencanaan peningkatan produktivitas di suatu organisasi." },
-      { type: "essay", question: "Bagaimana Anda menyusun rencana pelaksanaan peningkatan produktivitas yang mempertimbangkan keterbatasan sumber daya dan resistensi terhadap perubahan?" },
-      { type: "essay", question: "Jelaskan metode evaluasi yang komprehensif untuk menilai efektivitas sistem perencanaan peningkatan produktivitas." },
-      { type: "essay", question: "Bagaimana cara menetapkan target dan sasaran peningkatan produktivitas yang ambisius namun tetap realistis dan dapat dicapai?" },
-      { type: "essay", question: "Jelaskan strategi menyiapkan organisasi untuk program peningkatan produktivitas, termasuk pembentukan tim dan alokasi sumber daya." },
-      { type: "essay", question: "Sebutkan dan jelaskan indikator keberhasilan yang dapat digunakan untuk mengukur peningkatan produktivitas dari berbagai perspektif." },
-      { type: "essay", question: "Rencanakan program bimbingan penerapan alat dan teknik peningkatan produktivitas untuk organisasi dengan karyawan yang memiliki latar belakang beragam." },
-      { type: "essay", question: "Jelaskan pendekatan yang efektif untuk melaksanakan bimbingan penerapan metode peningkatan produktivitas di tengah kesibukan operasional sehari-hari." },
-      { type: "essay", question: "Bagaimana cara mengendalikan dan memantau pelaksanaan bimbingan penerapan teknik peningkatan produktivitas untuk memastikan hasil yang diharapkan?" },
-      { type: "essay", question: "Jelaskan bagaimana mengukur ROI (Return on Investment) dari program peningkatan produktivitas yang telah dilaksanakan." }
+      // Soal esai (5 soal)
+      { type: "essay", question: "Jelaskan langkah-langkah sistematis dalam mengumpulkan data dan informasi untuk perencanaan peningkatan produktivitas di suatu organisasi. Sertakan contoh metode pengumpulan data yang efektif." },
+      { type: "essay", question: "Bagaimana Anda menyusun rencana pelaksanaan peningkatan produktivitas yang mempertimbangkan keterbatasan sumber daya dan resistensi terhadap perubahan? Berikan contoh strategi yang dapat digunakan." },
+      { type: "essay", question: "Jelaskan metode evaluasi yang komprehensif untuk menilai efektivitas sistem perencanaan peningkatan produktivitas. Sertakan indikator yang dapat digunakan untuk mengukur keberhasilan." },
+      { type: "essay", question: "Bagaimana cara menetapkan target dan sasaran peningkatan produktivitas yang ambisius namun tetap realistis dan dapat dicapai? Jelaskan prinsip-prinsip yang perlu diperhatikan." },
+      { type: "essay", question: "Jelaskan strategi menyiapkan organisasi untuk program peningkatan produktivitas, termasuk pembentukan tim dan alokasi sumber daya. Apa tantangan yang mungkin dihadapi dan bagaimana mengatasinya?" }
     ];
 
     let currentQuestionIndex = 0;
@@ -194,7 +210,7 @@
       app.innerHTML = `
         <div class="flex flex-col items-center justify-center h-full text-center space-y-6">
           <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Peningkatan Produktivitas</h2>
-          <p class="text-gray-600 leading-relaxed">Selamat datang di uji kompetensi. Uji ini terdiri dari 40 soal pilihan ganda dan 10 soal esai. Total 50 soal.</p>
+          <p class="text-gray-600 leading-relaxed">Selamat datang di uji kompetensi. Uji ini terdiri dari 30 soal pilihan ganda dan 5 soal esai. Total 35 soal.</p>
           <p class="text-sm text-gray-500">Waktu pengerjaan: 60 menit</p>
           <button onclick="startTest()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             Mulai Uji
